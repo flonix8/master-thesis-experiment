@@ -1,0 +1,3 @@
+[submodule "moquette"]
+	path = moquette
+	url = git@github.com:andsel/moquette.git
