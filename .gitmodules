@@ -1,3 +1,6 @@
 [submodule "moquette"]
 	path = moquette
 	url = git@gitlab.tubit.tu-berlin.de:fstanek-master/dev-moquette.git
+[submodule "hbmqtt"]
+	path = hbmqtt
+	url = https://github.com/beerfactory/hbmqtt.git
