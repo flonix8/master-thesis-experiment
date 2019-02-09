@@ -1,0 +1,24 @@
+version: "3.5"
+
+services:
+  moquette:
+    build: ./moquette
+    expose: 
+      - "1883"
+    ports:
+      - "1883:1883" 
+  subscriber_1:
+    build: ./mosquitto_client
+    command: 
+      - sub 
+      - -h moquette -v -d -t /topic1
+  subscriber_2:
+    build: ./mosquitto_client
+    command: 
+      - sub 
+      - -h moquette -v -d -t /#
+  publisher:
+    build: ./mosquitto_client
+    command: 
+      - pub
+      - -h moquette -d -t /topic1 -m 2
