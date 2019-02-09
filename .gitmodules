@@ -1,6 +1,0 @@
-[submodule "hbmqtt"]
-	path = hbmqtt
-	url = git@gitlab.tubit.tu-berlin.de:florian.stanek/dev-hbmqtt.git
-[submodule "moquette"]
-	path = moquette
-	url = git@gitlab.tubit.tu-berlin.de:fstanek-master/dev-moquette.git
