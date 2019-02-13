@@ -21,4 +21,4 @@ services:
     build: ./mosquitto_client
     command: 
       - pub
-      - -h moquette -d -t /topic1 -m 2
+      - -h moquette -d -t /topic1 -m "Hello World"
