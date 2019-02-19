@@ -7,18 +7,30 @@ services:
       - "1883"
     ports:
       - "1883:1883" 
-  subscriber_1:
+  subscriber_mosquitto:
     build: ./mosquitto_client
     command: 
       - sub 
       - -h moquette -v -d -t /topic1
-  subscriber_2:
-    build: ./mosquitto_client
+  subscriber_hbmqtt:
+    build:
+      context: ./hbmqtt
+      dockerfile: Dockerfile_sub
     command: 
-      - sub 
-      - -h moquette -v -d -t /#
-  publisher:
+      - --url mqtt://moquette -t /topic1
+  publisher_mosquitto:
     build: ./mosquitto_client
     command: 
       - pub
-      - -h moquette -d -t /topic1 -m "Hello World"
+      - -h moquette -d -t /topic1 -m from_mosquitto
+  publisher_hbmqtt:
+    build:
+      context: ./hbmqtt
+      dockerfile: Dockerfile_pub
+    command: 
+      - --url mqtt://moquette -t /topic1 -m from_hbmqtt
+  tcpdump:
+    image: corfr/tcpdump
+    volumes: 
+      - "$PWD/tcpdump:/data"
+    network_mode: "service:moquette"
