@@ -1,7 +1,6 @@
 # Subprojects
-/moquette
-/hbmqtt
-/containernet
+**/moquette
+**/containernet
 
 # Editor config
 .vscode
