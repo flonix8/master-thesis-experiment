@@ -1,13 +1,14 @@
 #!/bin/bash
 
 build() {
-    docker build -t containernet ./containernet
+    docker build -t containernet ./topology
+    docker build -t broker-node ./nodes/broker
+    docker build -t client-node ./nodes/client
 }
 
 start() {
     docker run --name containernet -it --rm --privileged --pid='host' \
         -v /var/run/docker.sock:/var/run/docker.sock \
-        -v $(pwd)/topology:/containernet/topology \
         containernet "$@"
 }
 
