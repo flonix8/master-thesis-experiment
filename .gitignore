@@ -4,3 +4,11 @@
 
 # Editor config
 .vscode
+.idea
+
+# Venvs
+.venv
+venv
+
+# Capture output
+capture/
