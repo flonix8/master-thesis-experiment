@@ -27,14 +27,18 @@ case "$1" in
     ;;
 "start")
     start "${@:2}"
-    stop
     ;;
 "stop")
+    stop
+    ;;
+"run")
+    build
+    start
     stop
     ;;
 *)
     echo "
     Usage:
-        build | start | stop"
+        build | start | stop | run"
     ;;
 esac
