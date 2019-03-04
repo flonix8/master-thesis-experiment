@@ -1,12 +1,11 @@
-FROM ubuntu:trusty
+FROM ubuntu:bionic
 
-    
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 && \
-    echo 'deb http://repos.azulsystems.com/ubuntu stable main' > /etc/apt/sources.list.d/zulu.list && \
-    apt update && \
-    apt install -y \
+RUN apt update && apt install -y \
         iperf \
-        zulu-8
+        net-tools \
+        iputils-ping \
+        iproute2 \
+        openjdk-8-jdk
 
 COPY ./moquette /moquette-src
 WORKDIR /moquette-src
