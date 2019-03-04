@@ -1,0 +1,10 @@
+# Docker stuff
+Dockerfile
+.dockerignore
+
+# venv
+.venv
+venv
+
+# editor config
+.idea
