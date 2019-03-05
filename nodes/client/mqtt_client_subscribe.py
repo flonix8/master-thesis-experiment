@@ -1,5 +1,6 @@
-import paho.mqtt.client as mqtt
 import argparse
+
+import paho.mqtt.client as mqtt
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-b', '--broker-host', help='Broker host to connect to', required=True)
