@@ -13,7 +13,7 @@ start() {
         --name $CAPTURE_CONTAINER \
         -v $(pwd)/capture:/capture \
         tcpdump -i eth0 -w /capture/$CAPTURE_FILENAME -U
-    wireshark $(pwd)/capture/$CAPTURE_FILENAME $
+    wireshark $(pwd)/capture/$CAPTURE_FILENAME
 }
 
 stop() {
