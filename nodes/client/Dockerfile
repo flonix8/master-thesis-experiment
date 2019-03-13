@@ -12,11 +12,13 @@ RUN apt update && apt install -y \
     python3-pip && \
     ln -s /usr/bin/python3.7 /usr/bin/python
 
-ADD . /client/
-WORKDIR /client
-
 # Install dependencies
+ADD requirements.txt /client/
+WORKDIR /client
 RUN python -m pip install --upgrade pip && \
     python -m pip install -r requirements.txt
+
+# Add rest of files
+ADD . /client/
 
 CMD ["/bin/bash"]

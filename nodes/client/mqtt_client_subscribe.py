@@ -8,7 +8,7 @@ args = parser.parse_args()
 
 
 def on_connect(client: mqtt.Client, userdata, flags, result_code):
-    print(f'Connected with result code: {result_code}')
+    print(f'Connected with result code: {result_code} as {client._client_id}')
     client.subscribe('#')
 
 

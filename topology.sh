@@ -13,12 +13,12 @@ start() {
 }
 
 stop() {
-    if [ $(docker ps -aq | wc -l) -eq 0 ]; then 
+    if [ $(docker ps -aq -f name=mn. -f name=containernet | wc -l) -eq 0 ]; then 
         echo "Nothing to clean up..."
         exit
     fi
-    docker stop $(docker ps -aq)
-    docker container prune --force
+    docker stop $(docker ps -aq -f name=mn. -f name=containernet)
+    docker rm -v $(docker ps -aq -f name=mn. -f name=containernet)
 }
 
 case "$1" in

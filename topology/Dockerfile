@@ -32,8 +32,8 @@ RUN pip2 install "more-itertools<=5.0.0"
 ENV CONTAINERNET_NESTED 1
 
 COPY ./entrypoint.sh /containernet/entrypoint.sh
-COPY ./reference_topology.py /containernet/topology/
+COPY ./*.py /containernet/
 RUN chmod +x entrypoint.sh
 
 ENTRYPOINT ["./entrypoint.sh"]
-CMD ["python", "topology/reference_topology.py"]
+#CMD ["python", "reference_topology.py"]

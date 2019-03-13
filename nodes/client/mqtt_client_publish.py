@@ -17,7 +17,14 @@ def on_connect(client: mqtt.Client, userdata, flags, result_code):
     print(f'Connected with result code: {result_code}')
 
     for message in messages(2000):
-        client.publish('Test', message)
+        print(f'Publishing message: {message}')
+        result = mqtt.MQTT_ERR_UNKNOWN
+        while not result == mqtt.MQTT_ERR_SUCCESS:
+            msg_info = client.publish('Test', message, qos=1)
+            result = msg_info.rc
+
+    client.disconnect()
+    client.loop_stop()
 
 
 def on_message(client: mqtt.Client, userdata, msg: mqtt.MQTTMessage):
