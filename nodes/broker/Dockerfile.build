@@ -7,4 +7,9 @@ RUN apt update && apt install -y \
         iproute2 \
         openjdk-8-jdk
 
-ENTRYPOINT ["/moquette/bin/moquette.sh"]
+COPY . /src
+WORKDIR /src/moquette
+
+RUN chmod +x /src/build.sh
+
+ENTRYPOINT ["/src/build.sh"]
