@@ -1077,7 +1077,8 @@ class Ec2Inventory(object):
         # Add custom group based on tag_name
         type_match = re.match(r'\S*_(broker|client)\d+', instance.tags['Name'])
         if type_match is not None:
-            self.push(self.inventory, type_match.group(1), hostname)
+            self.push(self.inventory, f'{type_match.group(1)}_nodes', hostname)
+            self.push(self.inventory, 'all_nodes', hostname)
 
         # Global Tag: tag all EC2 instances
         self.push(self.inventory, 'ec2', hostname)
