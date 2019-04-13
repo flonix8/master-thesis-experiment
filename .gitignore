@@ -14,3 +14,7 @@ venv
 
 # Capture output
 capture/
+
+# Keys
+accessKeys.csv
+set_access_keys.sh
