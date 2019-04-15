@@ -1,0 +1,4 @@
+aws --region eu-west-1 ec2 start-instances --instance-ids i-04d21e47e7df34e62
+aws --region eu-west-1 ec2 stop-instances --instance-ids i-04d21e47e7df34e62
+
+ansible-playbook -i ec2.py --key-file=mockfog.pem --ssh-common-args="-o StrictHostKeyChecking=no" broker.yml
