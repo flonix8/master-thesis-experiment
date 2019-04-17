@@ -1,0 +1,147 @@
+[ {
+  "allDocs" : [ {
+    "docName" : "New Document",
+    "name" : "mgmt",
+    "addr" : "192.168.100.0/24",
+    "id" : 109,
+    "allNets" : {
+      "113" : {
+        "name" : "edge1_net1",
+        "cancelled" : false,
+        "addr" : "10.0.3.0/24",
+        "icon" : "net",
+        "edgesBack" : {
+          "112" : {
+            "idEdge" : "265",
+            "loss" : 0.0,
+            "corrupt" : 0.0,
+            "delay" : 0,
+            "in_rate" : 1000000,
+            "cancelled" : false,
+            "reorder" : 0.0,
+            "duplicate" : 0.0,
+            "out_rate" : 1000000,
+            "dispersion" : 0,
+            "addr" : "10.0.3.0/24"
+          }
+        }
+      },
+      "112" : {
+        "name" : "cloud1_net1",
+        "cancelled" : false,
+        "addr" : "10.0.2.0/24",
+        "icon" : "net",
+        "edgesBack" : { }
+      }
+    },
+    "allNodes" : {
+      "111" : {
+        "flavor" : "Raspberry Pi 2 Model B (t3.nano)",
+        "image" : "ami-078497568ccfcd100",
+        "name" : "edge1_client1",
+        "cancelled" : false,
+        "icon" : "device_sm",
+        "edgesBack" : {
+          "113" : {
+            "idEdge" : "249",
+            "loss" : 0.0,
+            "corrupt" : 0.0,
+            "delay" : 0,
+            "in_rate" : 100000,
+            "cancelled" : false,
+            "reorder" : 0.0,
+            "duplicate" : 0.0,
+            "out_rate" : 100000,
+            "dispersion" : 0,
+            "addr" : "10.0.3.44",
+            "mac" : "06:3d:5c:1d:1f:8a"
+          }
+        },
+        "public_ip" : "34.240.4.214",
+        "addr" : "10.0.1.145",
+        "mac" : "06:94:b0:43:7c:6e"
+      },
+      "130" : {
+        "flavor" : "Raspberry Pi 2 Model B (t3.nano)",
+        "image" : "ami-078497568ccfcd100",
+        "name" : "cloud1_client1",
+        "cancelled" : false,
+        "icon" : "device_sm",
+        "edgesBack" : {
+          "112" : {
+            "idEdge" : "263",
+            "loss" : 0.0,
+            "corrupt" : 0.0,
+            "delay" : 0,
+            "in_rate" : 100000,
+            "cancelled" : false,
+            "reorder" : 0.0,
+            "duplicate" : 0.0,
+            "out_rate" : 100000,
+            "dispersion" : 0,
+            "addr" : "10.0.2.142",
+            "mac" : "06:40:38:32:15:2e"
+          }
+        },
+        "public_ip" : "34.248.155.3",
+        "addr" : "10.0.1.104",
+        "mac" : "06:38:7a:4e:a0:b6"
+      },
+      "110" : {
+        "flavor" : "Raspberry Pi 2 Model B (t3.nano)",
+        "image" : "ami-078497568ccfcd100",
+        "name" : "cloud1_broker1",
+        "cancelled" : false,
+        "icon" : "device_sm",
+        "edgesBack" : {
+          "112" : {
+            "idEdge" : "234",
+            "loss" : 0.0,
+            "corrupt" : 0.0,
+            "delay" : 0,
+            "in_rate" : 100000,
+            "cancelled" : false,
+            "reorder" : 0.0,
+            "duplicate" : 0.0,
+            "out_rate" : 100000,
+            "dispersion" : 0,
+            "addr" : "10.0.2.34",
+            "mac" : "06:97:47:f8:d5:be"
+          }
+        },
+        "public_ip" : "54.229.113.25",
+        "addr" : "10.0.1.25",
+        "mac" : "06:4f:79:e6:f4:9a"
+      },
+      "129" : {
+        "flavor" : "Raspberry Pi 2 Model B (t3.nano)",
+        "image" : "ami-078497568ccfcd100",
+        "name" : "edge1_broker1",
+        "cancelled" : false,
+        "icon" : "device_sm",
+        "edgesBack" : {
+          "113" : {
+            "idEdge" : "264",
+            "loss" : 0.0,
+            "corrupt" : 0.0,
+            "delay" : 0,
+            "in_rate" : 100000,
+            "cancelled" : false,
+            "reorder" : 0.0,
+            "duplicate" : 0.0,
+            "out_rate" : 100000,
+            "dispersion" : 0,
+            "addr" : "10.0.3.151",
+            "mac" : "06:62:4d:5a:1e:dc"
+          }
+        },
+        "public_ip" : "18.203.158.87",
+        "addr" : "10.0.1.123",
+        "mac" : "06:e7:27:39:dd:8c"
+      }
+    }
+  } ],
+  "tMap" : {
+    "0" : [ ]
+  }
+} ]
