@@ -1,0 +1,7 @@
+---
+- name: Add EPEL repositories
+  command: amazon-linux-extras install -y epel
+
+- name: Install Mosquitto (package includes clients)
+  command: yum -y install mosquitto
+  
