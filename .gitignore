@@ -19,3 +19,6 @@ capture/
 accessKeys.csv
 set_access_keys.sh
 mockfog.pem
+
+# Ansible files
+**/*.retry
