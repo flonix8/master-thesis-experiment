@@ -1,6 +1,6 @@
 {% for host in groups['broker_nodes'] if hostvars[host].ansible_hostname != ansible_hostname %}
 connection {{ hostvars[host].ec2_tag_Name }} ({{ hostvars[host].ec2_ip_address }})
 address {{ hostvars[host].ansible_eth1.ipv4.address }}
-topic # out 0
+topic # both 0
 
 {% endfor %}
