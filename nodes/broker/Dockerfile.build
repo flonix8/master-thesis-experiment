@@ -1,15 +1,11 @@
 FROM ubuntu:bionic
 
 RUN apt update && apt install -y \
-        iperf \
-        net-tools \
-        iputils-ping \
-        iproute2 \
         openjdk-8-jdk
 
 COPY . /src
 WORKDIR /src/moquette
 
-RUN chmod +x /src/build.sh
+RUN chmod +x /src/build_moquette.sh
 
-ENTRYPOINT ["/src/build.sh"]
+ENTRYPOINT ["/src/build_moquette.sh"]

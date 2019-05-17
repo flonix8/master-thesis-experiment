@@ -3,4 +3,4 @@
 USER=ec2-user
 NODE=$1
 
-ssh -i mockfog.pem $USER@$NODE
+ssh -i keys/mockfog.pem $USER@$NODE

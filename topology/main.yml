@@ -2,7 +2,7 @@
   remote_user: ec2-user
   become: yes
   roles:
-    - mosquitto_broker
+    - moquette_broker
 
 - hosts: client_nodes
   remote_user: ec2-user

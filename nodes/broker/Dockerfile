@@ -1,10 +1,7 @@
-FROM ubuntu:bionic
+FROM alpine:3.9
 
-RUN apt update && apt install -y \
-        iperf \
-        net-tools \
-        iputils-ping \
-        iproute2 \
-        openjdk-8-jdk
+RUN apk add openjdk8-jre-base
+
+COPY --from=moquette-build /moquette /moquette
 
 ENTRYPOINT ["/moquette/bin/moquette.sh"]

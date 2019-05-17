@@ -1,0 +1,10 @@
+port 1883
+host 0.0.0.0
+
+bridge_port 1884
+bridge_host 0.0.0.0
+
+bridge_connections \
+{% for host in groups['broker_nodes'] if hostvars[host].ansible_hostname != ansible_hostname %}
+{{ hostvars[host].ansible_eth1.ipv4.address }}:1884,\
+{% endfor %}
