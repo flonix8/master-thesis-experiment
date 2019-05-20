@@ -1,4 +1,4 @@
 #!/bin/bash
 
 . keys/set_access_keys.sh
-aws --region eu-west-1 ec2 stop-instances --instance-ids i-04d21e47e7df34e62
+aws --region eu-central-1 ec2 stop-instances --instance-ids i-0cb6866e4d9e0da37
