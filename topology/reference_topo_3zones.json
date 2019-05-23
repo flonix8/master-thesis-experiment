@@ -60,7 +60,7 @@
                 "allNodes": {
                     "11": {
                         "flavor": "Raspberry Pi 2 Model B (t3.nano)",
-                        "image": "ami-078497568ccfcd100",
+                        "image": "ami-0e9bf50cfeb18c97b",
                         "name": "edge2_broker1",
                         "cancelled": false,
                         "icon": "device_sm",
@@ -82,7 +82,7 @@
                     },
                     "31": {
                         "flavor": "Raspberry Pi 2 Model B (t3.nano)",
-                        "image": "ami-078497568ccfcd100",
+                        "image": "ami-0e9bf50cfeb18c97b",
                         "name": "edge1_client1",
                         "cancelled": false,
                         "icon": "device_sm",
@@ -104,7 +104,7 @@
                     },
                     "10": {
                         "flavor": "Raspberry Pi 2 Model B (t3.nano)",
-                        "image": "ami-078497568ccfcd100",
+                        "image": "ami-0e9bf50cfeb18c97b",
                         "name": "edge2_client1",
                         "cancelled": false,
                         "icon": "device_sm",
@@ -126,7 +126,7 @@
                     },
                     "30": {
                         "flavor": "Raspberry Pi 2 Model B (t3.nano)",
-                        "image": "ami-078497568ccfcd100",
+                        "image": "ami-0e9bf50cfeb18c97b",
                         "name": "edge1_broker3",
                         "cancelled": false,
                         "icon": "device_sm",
@@ -148,7 +148,7 @@
                     },
                     "9": {
                         "flavor": "Raspberry Pi 2 Model B (t3.nano)",
-                        "image": "ami-078497568ccfcd100",
+                        "image": "ami-0e9bf50cfeb18c97b",
                         "name": "edge1_client2",
                         "cancelled": false,
                         "icon": "device_sm",
@@ -170,7 +170,7 @@
                     },
                     "29": {
                         "flavor": "Raspberry Pi 2 Model B (t3.nano)",
-                        "image": "ami-078497568ccfcd100",
+                        "image": "ami-0e9bf50cfeb18c97b",
                         "name": "edge1_broker1",
                         "cancelled": false,
                         "icon": "device_sm",
@@ -192,7 +192,7 @@
                     },
                     "8": {
                         "flavor": "Raspberry Pi 2 Model B (t3.nano)",
-                        "image": "ami-078497568ccfcd100",
+                        "image": "ami-0e9bf50cfeb18c97b",
                         "name": "edge1_broker2",
                         "cancelled": false,
                         "icon": "device_sm",
@@ -214,7 +214,7 @@
                     },
                     "28": {
                         "flavor": "Raspberry Pi 2 Model B (t3.nano)",
-                        "image": "ami-078497568ccfcd100",
+                        "image": "ami-0e9bf50cfeb18c97b",
                         "name": "cloud_broker",
                         "cancelled": false,
                         "icon": "device_sm",
@@ -236,7 +236,7 @@
                     },
                     "7": {
                         "flavor": "Raspberry Pi 2 Model B (t3.nano)",
-                        "image": "ami-078497568ccfcd100",
+                        "image": "ami-0e9bf50cfeb18c97b",
                         "name": "cloud_client",
                         "cancelled": false,
                         "icon": "device_sm",
