@@ -1,0 +1,11 @@
+---
+
+- include_tasks: 
+    file: bootstrap.yml
+    apply:
+      tags: bootstrap
+
+- include_tasks: 
+    file: destroy.yml
+    apply:
+      tags: destroy

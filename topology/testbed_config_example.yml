@@ -1,0 +1,6 @@
+---
+ec2_access_key: ACCESS_KEY
+ec2_secret_access_key: SECRET_ACCESS_KEY
+ec2_region: eu-central-1
+ssh_key_name: KEY_NAME
+base_image: BASE_IMAGE_ID
