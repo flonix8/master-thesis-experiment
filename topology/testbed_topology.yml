@@ -1,13 +1,46 @@
 ---
 nodes:
-  - name: cloud1_broker1
-    flavor: t3.nano
-
-  - name: cloud1_client1
-    flavor: t3.nano
-
-  - name: edge1_broker1
-    flavor: t3.nano
-    
-  - name: edge1_client1
-    flavor: t3.nano
+- name: cloud1_client1
+  type: machine
+  flavor: t3.nano
+  bandwidth_out: 1000
+  delay_paths:
+  - target: cloud1_broker1
+    value: 0
+  - target: edge1_client1
+    value: 20
+  - target: edge1_broker1
+    value: 20
+- name: cloud1_broker1
+  type: machine
+  flavor: t3.nano
+  bandwidth_out: 1000
+  delay_paths:
+  - target: cloud1_client1
+    value: 0
+  - target: edge1_client1
+    value: 20
+  - target: edge1_broker1
+    value: 20
+- name: edge1_client1
+  type: machine
+  flavor: t3.nano
+  bandwidth_out: 1000
+  delay_paths:
+  - target: cloud1_client1
+    value: 20
+  - target: cloud1_broker1
+    value: 20
+  - target: edge1_broker1
+    value: 0
+- name: edge1_broker1
+  type: machine
+  flavor: t3.nano
+  bandwidth_out: 1000
+  delay_paths:
+  - target: cloud1_client1
+    value: 20
+  - target: cloud1_broker1
+    value: 20
+  - target: edge1_client1
+    value: 0
