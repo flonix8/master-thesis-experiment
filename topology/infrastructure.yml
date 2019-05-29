@@ -4,6 +4,6 @@
   hosts: localhost
   vars_files:
     - "{{ playbook_dir }}/testbed_config.yml"
-    - "{{ playbook_dir }}/testbed_nodes.yml"
+    - "{{ playbook_dir }}/testbed_topology.yml"
   roles:
     - topology
