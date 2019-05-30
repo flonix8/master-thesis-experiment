@@ -251,7 +251,7 @@ class Ec2Inventory(object):
         TESTBED_FILE = 'testbed_topology.yml'
         if os.path.isfile(TESTBED_FILE):
             with open(TESTBED_FILE, 'r') as file:
-                self.testbed_topology = yaml.load(file)
+                self.testbed_topology = yaml.safe_load(file)
 
         # Inventory grouped by instance IDs, tags, security groups, regions,
         # and availability zones

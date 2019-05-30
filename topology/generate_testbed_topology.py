@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import sys
 import networkx as nx
 from networkx.exception import NetworkXNoCycle, NetworkXNoPath
@@ -91,5 +93,5 @@ topo = {
 }
 
 # Write yaml file
-with open('testbed_topology.yaml', 'w') as file:
+with open('testbed_topology.yml', 'w') as file:
     file.write(yaml.dump(topo, default_flow_style=False, sort_keys=False, explicit_start=True))

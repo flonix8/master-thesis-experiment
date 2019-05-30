@@ -6,4 +6,4 @@
     - "{{ playbook_dir }}/testbed_config.yml"
     - "{{ playbook_dir }}/testbed_topology.yml"
   roles:
-    - topology
+    - topology_bootstrap
