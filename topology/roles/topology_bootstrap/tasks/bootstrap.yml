@@ -104,6 +104,7 @@
     vpc_subnet_id: "{{ management_subnet.subnet.id }}"
     instance_tags:
       Name: "{{ item.name }}"
+      InternalIP: "{{ item.internal_ip }}"
     exact_count: 1
     count_tag:
       Name: "{{ item.name }}"
@@ -128,6 +129,7 @@
     state: present
     attached: True
     device_index: 1
+    private_ip_address: "{{ item.tags.InternalIP }}"
     subnet_id: "{{ internal_subnet.subnet.id }}"
     instance_id: "{{ item.instance_id }}"
   with_items: "{{ ec2.instances }}"

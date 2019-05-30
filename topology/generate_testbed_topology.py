@@ -2,9 +2,22 @@
 
 import sys
 import networkx as nx
+import random
 from networkx.exception import NetworkXNoCycle, NetworkXNoPath
 from networkx.classes.graph import Graph
 import yaml
+
+# .1, .2, .3, .255 are reserved by AWS
+ip_address_pool = ['10.0.2.' + str(i) for i in range(4, 255)]
+
+
+def generateRandomIP():
+    if len(ip_address_pool) == 0:
+        print('IP address space exhausted! Aborting...')
+        sys.exit(1)
+    random_ip = random.choice(ip_address_pool)
+    ip_address_pool.remove(random_ip)
+    return random_ip
 
 
 def node_attrs(**kwargs):
@@ -12,6 +25,7 @@ def node_attrs(**kwargs):
         'type': 'machine',
         'flavor': 't3.nano',
         'bandwidth_out': 1000,
+        'internal_ip': generateRandomIP()
     }
     for k, v in kwargs.items():
         attrs[k] = v
@@ -81,9 +95,10 @@ for node, attrs in machines:
         **attrs,
         'delay_paths': []
     }
-    for dst_node, _ in filter(lambda n: n[0] != node, machines):
+    for dst_node, dst_attrs in filter(lambda n: n[0] != node, machines):
         data['delay_paths'].append({
             'target': dst_node,
+            'internal_ip': dst_attrs['internal_ip'],
             'value': get_path_delay_between_machines(g, node, dst_node)
         })
     nodes.append(data)
