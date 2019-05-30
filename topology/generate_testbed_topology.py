@@ -91,4 +91,5 @@ topo = {
 }
 
 # Write yaml file
-print(yaml.dump(topo, default_flow_style=False, sort_keys=False))
+with open('testbed_topology.yaml', 'w') as file:
+    file.write(yaml.dump(topo, default_flow_style=False, sort_keys=False, explicit_start=True))

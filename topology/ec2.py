@@ -166,7 +166,7 @@ from boto import rds
 from boto import elasticache
 from boto import route53
 from boto import sts
-
+import yaml
 from ansible.module_utils import six
 from ansible.module_utils import ec2 as ec2_utils
 from ansible.module_utils.six.moves import configparser
@@ -174,6 +174,7 @@ from ansible.module_utils.six.moves import configparser
 HAS_BOTO3 = False
 try:
     import boto3  # noqa
+
     HAS_BOTO3 = True
 except ImportError:
     pass
@@ -244,6 +245,13 @@ class Ec2Inventory(object):
 
     def __init__(self):
         ''' Main execution path '''
+
+        # Load topology configuration to merge into instance information later on
+        self.testbed_topology = None
+        TESTBED_FILE = 'testbed_topology.yml'
+        if os.path.isfile(TESTBED_FILE):
+            with open(TESTBED_FILE, 'r') as file:
+                self.testbed_topology = yaml.load(file)
 
         # Inventory grouped by instance IDs, tags, security groups, regions,
         # and availability zones
@@ -369,7 +377,7 @@ class Ec2Inventory(object):
         self.hostname_variable = config.get('ec2', 'hostname_variable')
 
         if config.has_option('ec2', 'destination_format') and \
-           config.has_option('ec2', 'destination_format_tags'):
+                config.has_option('ec2', 'destination_format_tags'):
             self.destination_format = config.get('ec2', 'destination_format')
             self.destination_format_tags = config.get('ec2', 'destination_format_tags').split(',')
         else:
@@ -431,8 +439,8 @@ class Ec2Inventory(object):
 
         # boto configuration profile (prefer CLI argument then environment variables then config file)
         self.boto_profile = self.args.boto_profile or \
-            os.environ.get('AWS_PROFILE') or \
-            config.get('ec2', 'boto_profile')
+                            os.environ.get('AWS_PROFILE') or \
+                            config.get('ec2', 'boto_profile')
 
         # AWS credentials (prefer environment variables)
         if not (self.boto_profile or os.environ.get('AWS_ACCESS_KEY_ID') or
@@ -500,7 +508,9 @@ class Ec2Inventory(object):
         self.ec2_instance_filters = []
 
         if config.has_option('ec2', 'instance_filters') or 'EC2_INSTANCE_FILTERS' in os.environ:
-            filters = os.getenv('EC2_INSTANCE_FILTERS', config.get('ec2', 'instance_filters') if config.has_option('ec2', 'instance_filters') else '')
+            filters = os.getenv('EC2_INSTANCE_FILTERS',
+                                config.get('ec2', 'instance_filters') if config.has_option('ec2',
+                                                                                           'instance_filters') else '')
 
             if self.stack_filters and '&' in filters:
                 self.fail_with_error("AND filters along with stack_filter enabled is not supported.\n")
@@ -589,7 +599,8 @@ class Ec2Inventory(object):
         conn = module.connect_to_region(region, **connect_args)
         # connect_to_region will fail "silently" by returning None if the region name is wrong or not supported
         if conn is None:
-            self.fail_with_error("region name: %s likely not supported, or AWS is down.  connection to region failed." % region)
+            self.fail_with_error(
+                "region name: %s likely not supported, or AWS is down.  connection to region failed." % region)
         return conn
 
     def get_instances_by_region(self, region):
@@ -621,7 +632,8 @@ class Ec2Inventory(object):
             max_filter_value = 199
             tags = []
             for i in range(0, len(instance_ids), max_filter_value):
-                tags.extend(conn.get_all_tags(filters={'resource-type': 'instance', 'resource-id': instance_ids[i:i + max_filter_value]}))
+                tags.extend(conn.get_all_tags(
+                    filters={'resource-type': 'instance', 'resource-id': instance_ids[i:i + max_filter_value]}))
 
             tags_by_instance_id = defaultdict(dict)
             for tag in tags:
@@ -706,8 +718,8 @@ class Ec2Inventory(object):
                 error = self.get_auth_error_message()
             elif e.error_code == "OptInRequired":
                 error = "RDS hasn't been enabled for this account yet. " \
-                    "You must either log in to the RDS service through the AWS console to enable it, " \
-                    "or set 'rds = False' in ec2.ini"
+                        "You must either log in to the RDS service through the AWS console to enable it, " \
+                        "or set 'rds = False' in ec2.ini"
             elif not e.reason == "Forbidden":
                 error = "Looks like AWS RDS is down:\n%s" % e.message
             self.fail_with_error(error, 'getting RDS instances')
@@ -752,7 +764,8 @@ class Ec2Inventory(object):
                             # get AWS tag key e.g. tag:env will be 'env'
                             tag_name = filter_key.split(":", 1)[1]
                             # Filter values is a list (if you put multiple values for the same tag name)
-                            matches_filter = any(d['Key'] == tag_name and d['Value'] in filter_values for d in c['Tags'])
+                            matches_filter = any(
+                                d['Key'] == tag_name and d['Value'] in filter_values for d in c['Tags'])
 
                             if matches_filter:
                                 # it matches a filter, so stop looking for further matches
@@ -798,7 +811,8 @@ class Ec2Inventory(object):
                         # Boto also doesn't provide wrapper classes to CacheClusters or
                         # CacheNodes. Because of that we can't make use of the get_list
                         # method in the AWSQueryConnection. Let's do the work manually
-                        clusters = clusters + response['DescribeCacheClustersResponse']['DescribeCacheClustersResult']['CacheClusters']
+                        clusters = clusters + response['DescribeCacheClustersResponse']['DescribeCacheClustersResult'][
+                            'CacheClusters']
                     except KeyError as e:
                         error = "ElastiCache query to AWS failed (unexpected format)."
                         self.fail_with_error(error, 'getting ElastiCache clusters')
@@ -809,8 +823,8 @@ class Ec2Inventory(object):
                 error = self.get_auth_error_message()
             elif e.error_code == "OptInRequired":
                 error = "ElastiCache hasn't been enabled for this account yet. " \
-                    "You must either log in to the ElastiCache service through the AWS console to enable it, " \
-                    "or set 'elasticache = False' in ec2.ini"
+                        "You must either log in to the ElastiCache service through the AWS console to enable it, " \
+                        "or set 'elasticache = False' in ec2.ini"
             elif not e.reason == "Forbidden":
                 error = "Looks like AWS ElastiCache is down:\n%s" % e.message
             self.fail_with_error(error, 'getting ElastiCache clusters')
@@ -843,7 +857,8 @@ class Ec2Inventory(object):
             # Boto also doesn't provide wrapper classes to ReplicationGroups
             # Because of that we can't make use of the get_list method in the
             # AWSQueryConnection. Let's do the work manually
-            replication_groups = response['DescribeReplicationGroupsResponse']['DescribeReplicationGroupsResult']['ReplicationGroups']
+            replication_groups = response['DescribeReplicationGroupsResponse']['DescribeReplicationGroupsResult'][
+                'ReplicationGroups']
 
         except KeyError as e:
             error = "ElastiCache [Replication Groups] query to AWS failed (unexpected format)."
@@ -858,12 +873,14 @@ class Ec2Inventory(object):
         if None in [os.environ.get('AWS_ACCESS_KEY_ID'), os.environ.get('AWS_SECRET_ACCESS_KEY')]:
             errors.append(' - No AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY environment vars found')
         else:
-            errors.append(' - AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment vars found but may not be correct')
+            errors.append(
+                ' - AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment vars found but may not be correct')
 
         boto_paths = ['/etc/boto.cfg', '~/.boto', '~/.aws/credentials']
         boto_config_found = [p for p in boto_paths if os.path.isfile(os.path.expanduser(p))]
         if len(boto_config_found) > 0:
-            errors.append(" - Boto configs found at '%s', but the credentials contained may not be correct" % ', '.join(boto_config_found))
+            errors.append(" - Boto configs found at '%s', but the credentials contained may not be correct" % ', '.join(
+                boto_config_found))
         else:
             errors.append(" - No Boto config found at any expected location '%s'" % ', '.join(boto_paths))
 
@@ -1193,7 +1210,8 @@ class Ec2Inventory(object):
         if self.group_by_rds_parameter_group:
             self.push(self.inventory, self.to_safe("rds_parameter_group_" + instance.parameter_group.name), hostname)
             if self.nested_groups:
-                self.push_group(self.inventory, 'rds_parameter_groups', self.to_safe("rds_parameter_group_" + instance.parameter_group.name))
+                self.push_group(self.inventory, 'rds_parameter_groups',
+                                self.to_safe("rds_parameter_group_" + instance.parameter_group.name))
 
         # Global Tag: instances without tags
         if self.group_by_tag_none and len(instance.tags) == 0:
@@ -1285,15 +1303,20 @@ class Ec2Inventory(object):
 
         # Inventory: Group by parameter group
         if self.group_by_elasticache_parameter_group:
-            self.push(self.inventory, self.to_safe("elasticache_parameter_group_" + cluster['CacheParameterGroup']['CacheParameterGroupName']), dest)
+            self.push(self.inventory, self.to_safe(
+                "elasticache_parameter_group_" + cluster['CacheParameterGroup']['CacheParameterGroupName']), dest)
             if self.nested_groups:
-                self.push_group(self.inventory, 'elasticache_parameter_groups', self.to_safe(cluster['CacheParameterGroup']['CacheParameterGroupName']))
+                self.push_group(self.inventory, 'elasticache_parameter_groups',
+                                self.to_safe(cluster['CacheParameterGroup']['CacheParameterGroupName']))
 
         # Inventory: Group by replication group
-        if self.group_by_elasticache_replication_group and 'ReplicationGroupId' in cluster and cluster['ReplicationGroupId']:
-            self.push(self.inventory, self.to_safe("elasticache_replication_group_" + cluster['ReplicationGroupId']), dest)
+        if self.group_by_elasticache_replication_group and 'ReplicationGroupId' in cluster and cluster[
+            'ReplicationGroupId']:
+            self.push(self.inventory, self.to_safe("elasticache_replication_group_" + cluster['ReplicationGroupId']),
+                      dest)
             if self.nested_groups:
-                self.push_group(self.inventory, 'elasticache_replication_groups', self.to_safe(cluster['ReplicationGroupId']))
+                self.push_group(self.inventory, 'elasticache_replication_groups',
+                                self.to_safe(cluster['ReplicationGroupId']))
 
         # Global Tag: all ElastiCache clusters
         self.push(self.inventory, 'elasticache_clusters', cluster['CacheClusterId'])
@@ -1402,7 +1425,7 @@ class Ec2Inventory(object):
 
         # Skip clusters we cannot address (e.g. private VPC subnet or clustered redis)
         if replication_group['NodeGroups'][0]['PrimaryEndpoint'] is None or \
-           replication_group['NodeGroups'][0]['PrimaryEndpoint']['Address'] is None:
+                replication_group['NodeGroups'][0]['PrimaryEndpoint']['Address'] is None:
             return
 
         # Select the best destination address (PrimaryEndpoint)
@@ -1544,6 +1567,13 @@ class Ec2Inventory(object):
                 # print value
 
         instance_vars[self.to_safe('ec2_account_id')] = self.aws_account_id
+
+        # Add testbed topology configuration if set (lookup machine by name tag)
+        if self.testbed_topology:
+            machine_name = instance.tags['Name']
+            node_config = next(iter(filter(lambda n: n['name'] == machine_name, self.testbed_topology['nodes'])), None)
+            if node_config is not None:
+                instance_vars['testbed_config'] = node_config
 
         return instance_vars
 
