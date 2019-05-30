@@ -53,21 +53,37 @@ g = nx.Graph()
 g.add_node('cloud1', **node_attrs(type='zone'))
 g.add_node('cloud1_client1', **node_attrs())
 g.add_node('cloud1_broker1', **node_attrs())
+
 g.add_edge('cloud1_broker1', 'cloud1', **edge_attrs())
 g.add_edge('cloud1_client1', 'cloud1', **edge_attrs())
+
 
 # Edge zone #1
 g.add_node('edge1', **node_attrs(type='zone'))
 g.add_node('edge1_client1', **node_attrs())
+g.add_node('edge1_client2', **node_attrs())
 g.add_node('edge1_broker1', **node_attrs())
+
 g.add_edge('edge1_client1', 'edge1', **edge_attrs())
+g.add_edge('edge1_client2', 'edge1', **edge_attrs())
 g.add_edge('edge1_broker1', 'edge1', **edge_attrs())
+
+
+# Edge zone #2
+g.add_node('edge2', **node_attrs(type='zone'))
+g.add_node('edge2_client1', **node_attrs())
+g.add_node('edge2_broker1', **node_attrs())
+
+g.add_edge('edge2_client1', 'edge2', **edge_attrs())
+g.add_edge('edge2_broker1', 'edge2', **edge_attrs())
+
 
 # Connect zones
 g.add_edge('edge1', 'cloud1', **edge_attrs(delay=20))
+g.add_edge('edge2', 'cloud1', **edge_attrs(delay=20))
+
 
 # Check for cycles (lets not allow cycles for now)
-
 try:
     nx.find_cycle(g)
     print("Cycle found! Aborting...")
@@ -76,7 +92,6 @@ except NetworkXNoCycle:
     pass
 
 # Check if graph is connected
-
 try:
     nx.is_connected(g)
 except NetworkXNoPath:
