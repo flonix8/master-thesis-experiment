@@ -24,7 +24,7 @@ def node_attrs(**kwargs):
     attrs = {
         'type': 'machine',
         'flavor': 't3.nano',
-        'bandwidth_out': 1000,
+        'bandwidth_out': 10000,
         'internal_ip': generateRandomIP()
     }
     for k, v in kwargs.items():
