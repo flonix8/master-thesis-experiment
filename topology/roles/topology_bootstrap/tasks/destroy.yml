@@ -26,6 +26,18 @@
     wait: yes
     instance_ids: "{{ item.instance_id }}"
   with_items: "{{ ec2.instances }}"
+  register: instance_destruction
+  async: 300
+  poll: 0
+
+- name: Wait for EC2 instance destruction to finish
+  async_status:
+    jid: "{{ item.ansible_job_id }}"
+  register: instance_destruction_jobs
+  until: instance_destruction_jobs.finished
+  delay: 5
+  retries: 60
+  with_items: "{{ instance_destruction.results }}"
 
 - name: Get ENIs
   ec2_eni_facts:
