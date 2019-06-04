@@ -4,7 +4,7 @@
 . .venv/bin/activate
 
 # Generate testbed config file
-./generate_testbed_topology.py && \
+testbed_files/python/generate_testbed_topology.py && \
 
 # Run topology setup
 ansible-playbook --tags bootstrap infrastructure_bootstrap.yml && \
