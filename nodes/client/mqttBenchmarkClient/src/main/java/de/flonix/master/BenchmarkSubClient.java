@@ -2,8 +2,6 @@ package de.flonix.master;
 
 import org.eclipse.paho.client.mqttv3.*;
 
-import java.nio.charset.Charset;
-import java.time.Instant;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
@@ -14,23 +12,6 @@ public class BenchmarkSubClient {
     MqttClient mqttClient;
     MqttConnectOptions connectOptions;
     AtomicInteger messageCount = new AtomicInteger();
-
-    public static void main(String[] args) {
-
-        String serverURI = args[0];
-        String clientId = args[1];
-        new BenchmarkSubClient(serverURI, clientId);
-    }
-
-    private void incrementMessageCount() {
-        int current, next;
-        boolean success;
-        do {
-            current = messageCount.get();
-            next = current + 1;
-            success = messageCount.compareAndSet(current, next);
-        } while (!success);
-    }
 
     public BenchmarkSubClient(String serverURI, String clientId) {
         try {
@@ -62,8 +43,6 @@ public class BenchmarkSubClient {
                 log.info("Received " + messageCount + " messages");
             }
 
-            Thread.yield();
-
             mqttClient.disconnect();
             mqttClient.close();
 
@@ -73,11 +52,28 @@ public class BenchmarkSubClient {
 
     }
 
+    public static void main(String[] args) {
+
+        String serverURI = args[0];
+        String clientId = args[1];
+        new BenchmarkSubClient(serverURI, clientId);
+    }
+
     private static MqttConnectOptions createConnectOptions() {
         MqttConnectOptions options = new MqttConnectOptions();
         options.setAutomaticReconnect(false);
         options.setCleanSession(true);
         options.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
         return options;
+    }
+
+    private void incrementMessageCount() {
+        int current, next;
+        boolean success;
+        do {
+            current = messageCount.get();
+            next = current + 1;
+            success = messageCount.compareAndSet(current, next);
+        } while (!success);
     }
 }

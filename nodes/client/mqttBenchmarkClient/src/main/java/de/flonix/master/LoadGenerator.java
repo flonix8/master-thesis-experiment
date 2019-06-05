@@ -20,10 +20,8 @@ public class LoadGenerator {
     }
 
     public void trigger(long currentTick) {
-        if (shouldTrigger(currentTick)) {
-            if (hasMessages()) {
-                messageSender.sendMessage(messages.removeFirst());
-            }
+        if (checkTrigger(currentTick) && hasMessages()) {
+            messageSender.sendMessage(messages.removeFirst());
         }
     }
 
@@ -31,14 +29,24 @@ public class LoadGenerator {
         return messages.size() > 0;
     }
 
-    private Boolean shouldTrigger(long currentTick) {
-        return currentTick - lastTick >= interval;
+    private Boolean checkTrigger(long currentTick) {
+        boolean shouldTrigger = currentTick - lastTick >= interval;
+        if (shouldTrigger) {
+            lastTick = currentTick;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void prepareMessages() {
-        long numberOfMessages = (runtime * 1000000000) / interval;
+        long numberOfMessages = (runtime * 1000000000L) / interval;
         for (long i = 0; i < numberOfMessages; i++) {
             messages.add(new Message(topic, payloadSize));
         }
+    }
+
+    public void shutdown() {
+        messageSender.shutdown();
     }
 }

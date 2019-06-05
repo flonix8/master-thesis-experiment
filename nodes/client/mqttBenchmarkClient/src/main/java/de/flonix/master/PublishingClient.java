@@ -5,38 +5,24 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 public class PublishingClient {
     private static final String DELIMITER = ";";
-    private final MessageSender messageSender;
-    private final ExecutorService executorService;
-    private List<LoadGenerator> loadGenerators = new ArrayList<>();
+    private List<LoadGenerator> activeLoadGenerators = new ArrayList<>();
+    private List<LoadGenerator> finishedLoadGenerators = new ArrayList<>();
     private AtomicBoolean isRunning = new AtomicBoolean(false);
 
     private PublishingClient(File configFile) {
-        executorService = Executors.newFixedThreadPool(2);
-        messageSender = new MessageSender(executorService);
-
         parseConfigFile(configFile);
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            isRunning.set(false);
-            executorService.shutdown();
-            try {
-                executorService.awaitTermination(10, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
 
         prepareMessages();
 
         run();
+
+        shutdown();
     }
 
     public static void main(String[] args) {
@@ -50,14 +36,20 @@ public class PublishingClient {
     }
 
     private void prepareMessages() {
-        loadGenerators.forEach(LoadGenerator::prepareMessages);
+        activeLoadGenerators.forEach(LoadGenerator::prepareMessages);
     }
 
     private void run() {
         isRunning.set(true);
-        while (isRunning.get()) {
-            loadGenerators.removeAll(loadGenerators.stream().filter(gen -> !gen.hasMessages()).collect(Collectors.toList()));
-            loadGenerators.forEach(gen -> gen.trigger(System.nanoTime()));
+        while (isRunning.get() && !activeLoadGenerators.isEmpty()) {
+            activeLoadGenerators.forEach(gen -> {
+                if (gen.hasMessages()) {
+                    gen.trigger(System.nanoTime());
+                } else {
+                    finishedLoadGenerators.add(gen);
+                }
+            });
+            activeLoadGenerators.removeAll(finishedLoadGenerators);
         }
     }
 
@@ -71,10 +63,16 @@ public class PublishingClient {
                 int runtime = Integer.valueOf(configParams[2]);
                 int payloadSize = Integer.valueOf(configParams[3]);
 
-                loadGenerators.add(new LoadGenerator(topic, interval, runtime, payloadSize, messageSender));
+                activeLoadGenerators.add(new LoadGenerator(topic, interval, runtime, payloadSize, MessageSender.getInstance()));
             });
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void shutdown() {
+        isRunning.set(false);
+        activeLoadGenerators.forEach(LoadGenerator::shutdown);
+        finishedLoadGenerators.forEach(LoadGenerator::shutdown);
     }
 }
