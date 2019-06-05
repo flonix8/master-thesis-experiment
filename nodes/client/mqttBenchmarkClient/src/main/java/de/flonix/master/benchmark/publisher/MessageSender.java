@@ -26,7 +26,7 @@ class MessageSender {
 
     void sendMessage(Message msg) {
         executorService.execute(() -> {
-            msg.setTimestamp();
+            msg.setSentTimestamp();
             try {
                 mqttClient.publish(msg.getTopic(), msg.getPayload(), 0, false);
             } catch (MqttException e) {

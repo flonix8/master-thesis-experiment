@@ -7,10 +7,10 @@ import java.time.Instant;
 import java.util.UUID;
 
 public class Message {
-    static final String DELIMITER = ";";
+    private static final String DELIMITER = ";";
     private String id;
     private String topic;
-    private long timestamp = 0;
+    private long sentTimestamp = 0;
     private String randomPayloadPadding;
 
     public Message(String topic, int payloadSize) {
@@ -28,7 +28,7 @@ public class Message {
     private Message(String id, String topic, long timestamp, String randomPayloadPadding) {
         this.id = id;
         this.topic = topic;
-        this.timestamp = timestamp;
+        this.sentTimestamp = timestamp;
         this.randomPayloadPadding = randomPayloadPadding;
     }
 
@@ -38,24 +38,29 @@ public class Message {
         return new Message(values[0], topic, Long.getLong(values[1]), values[2]);
     }
 
+    private static long getEpochMicro() {
+        Instant now = Instant.now();
+        return (now.getEpochSecond() * 1000000) + (now.getNano() / 1000);
+    }
+
     public String getTopic() {
         return topic;
     }
 
     public byte[] getPayload() {
-        if (timestamp == 0) {
-            throw new NullPointerException("Payload has not been set yet due to missing timestamp!");
+        if (sentTimestamp == 0) {
+            throw new NullPointerException("Payload has not been set yet due to missing sentTimestamp!");
         }
-        return (id + DELIMITER + String.format("%019d", timestamp) + DELIMITER + randomPayloadPadding).getBytes(StandardCharsets.US_ASCII);
+        return (id + DELIMITER + String.format("%019d", sentTimestamp) + DELIMITER + randomPayloadPadding).getBytes(StandardCharsets.US_ASCII);
     }
 
-    public void setTimestamp() {
-        this.timestamp = Instant.now().toEpochMilli();
+    public void setSentTimestamp() {
+        this.sentTimestamp = getEpochMicro();
     }
 
     @Override
     public String toString() {
-        return "Message(id=" + id + ", topic=" + topic + ", timestamp=" + timestamp + ", payloadSize=" + randomPayloadPadding.length() + ")";
+        return "Message(id=" + id + ", topic=" + topic + ", sentTimestamp=" + sentTimestamp + ", payloadSize=" + randomPayloadPadding.length() + ")";
     }
 
 }
