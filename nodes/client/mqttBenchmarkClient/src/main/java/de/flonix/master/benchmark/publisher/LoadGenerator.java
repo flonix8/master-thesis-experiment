@@ -2,53 +2,49 @@ package de.flonix.master.benchmark.publisher;
 
 import de.flonix.master.benchmark.Message;
 
-import java.util.LinkedList;
-
-public class LoadGenerator {
+class LoadGenerator {
     private final long interval;
     private final String topic;
     private long lastTick = System.nanoTime();
     private MessageSender messageSender;
-    private LinkedList<Message> messages = new LinkedList<>();
-    private int runtime;
+    private long runtime;
     private int payloadSize;
+    private long startTime;
 
-    public LoadGenerator(String topic, long interval, int runtime, int payloadSize, MessageSender messageSender) {
+    LoadGenerator(String topic, long interval, int runtime, int payloadSize, MessageSender messageSender) {
         this.interval = interval;
         this.topic = topic;
         this.messageSender = messageSender;
-        this.runtime = runtime;
+        this.runtime = runtime * 1000000000L;
         this.payloadSize = payloadSize;
     }
 
-    public void trigger(long currentTick) {
+    void trigger(long currentTick) {
         if (checkTrigger(currentTick) && hasMessages()) {
-            messageSender.sendMessage(messages.removeFirst());
+            messageSender.sendMessage(new Message(topic, payloadSize));
         }
     }
 
-    public boolean hasMessages() {
-        return messages.size() > 0;
+    boolean hasMessages() {
+        return System.nanoTime() - startTime < runtime;
+    }
+
+    void start() {
+        startTime = System.nanoTime();
     }
 
     private Boolean checkTrigger(long currentTick) {
         boolean shouldTrigger = currentTick - lastTick >= interval;
         if (shouldTrigger) {
             lastTick = currentTick;
+            System.out.println("Runtime: " + runtime + ", Starttime: " + startTime);
             return true;
         } else {
             return false;
         }
     }
 
-    public void prepareMessages() {
-        long numberOfMessages = (runtime * 1000000000L) / interval;
-        for (long i = 0; i < numberOfMessages; i++) {
-            messages.add(new Message(topic, payloadSize));
-        }
-    }
-
-    public void shutdown() {
+    void shutdown() {
         messageSender.shutdown();
     }
 }

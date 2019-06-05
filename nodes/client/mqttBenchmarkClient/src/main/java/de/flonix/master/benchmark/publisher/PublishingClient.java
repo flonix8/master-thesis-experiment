@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PublishingClient {
     private static final String DELIMITER = ";";
-    private List<LoadGenerator> activeLoadGenerators = new ArrayList<>();
+    private List<LoadGenerator> loadGenerators = new ArrayList<>();
     private List<LoadGenerator> finishedLoadGenerators = new ArrayList<>();
     private AtomicBoolean isRunning = new AtomicBoolean(false);
     private final CommandWaiter commandWaiter;
@@ -22,9 +22,6 @@ public class PublishingClient {
         parseConfigFile(configFile);
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
-
-        commandWaiter.waitForCommand("prepare");
-        prepareMessages();
 
         commandWaiter.waitForCommand("run");
         run();
@@ -42,22 +39,18 @@ public class PublishingClient {
         }
     }
 
-    private void prepareMessages() {
-        activeLoadGenerators.forEach(LoadGenerator::prepareMessages);
-        System.out.println("Preparation done.");
-    }
-
     private void run() {
         isRunning.set(true);
-        while (isRunning.get() && !activeLoadGenerators.isEmpty() && !commandWaiter.hasCommand("shutdown")) {
-            activeLoadGenerators.forEach(gen -> {
+        loadGenerators.forEach(LoadGenerator::start);
+        while (isRunning.get() && !loadGenerators.isEmpty() && !commandWaiter.hasCommand("shutdown")) {
+            loadGenerators.forEach(gen -> {
                 if (gen.hasMessages()) {
                     gen.trigger(System.nanoTime());
                 } else {
                     finishedLoadGenerators.add(gen);
                 }
             });
-            activeLoadGenerators.removeAll(finishedLoadGenerators);
+            loadGenerators.removeAll(finishedLoadGenerators);
         }
     }
 
@@ -73,7 +66,7 @@ public class PublishingClient {
                 int runtime = Integer.valueOf(configParams[4]);
                 int payloadSize = Integer.valueOf(configParams[5]);
 
-                activeLoadGenerators.add(new LoadGenerator(topic, interval, runtime, payloadSize, MessageSender.getInstance(serverURI, clientId)));
+                loadGenerators.add(new LoadGenerator(topic, interval, runtime, payloadSize, MessageSender.getInstance(serverURI, clientId)));
             });
         } catch (IOException e) {
             e.printStackTrace();
@@ -82,7 +75,7 @@ public class PublishingClient {
 
     private void shutdown() {
         isRunning.set(false);
-        activeLoadGenerators.forEach(LoadGenerator::shutdown);
+        loadGenerators.forEach(LoadGenerator::shutdown);
         finishedLoadGenerators.forEach(LoadGenerator::shutdown);
         commandWaiter.stop();
     }
