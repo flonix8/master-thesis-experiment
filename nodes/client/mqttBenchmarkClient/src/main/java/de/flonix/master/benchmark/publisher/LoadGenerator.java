@@ -1,4 +1,6 @@
-package de.flonix.master;
+package de.flonix.master.benchmark.publisher;
+
+import de.flonix.master.benchmark.Message;
 
 import java.util.LinkedList;
 

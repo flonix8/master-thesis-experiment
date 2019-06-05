@@ -1,4 +1,4 @@
-package de.flonix.master;
+package de.flonix.master.benchmark;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -49,7 +49,7 @@ public class Message {
         return (id + DELIMITER + String.format("%019d", timestamp) + DELIMITER + randomPayloadPadding).getBytes(StandardCharsets.US_ASCII);
     }
 
-    void setTimestamp() {
+    public void setTimestamp() {
         this.timestamp = Instant.now().toEpochMilli();
     }
 

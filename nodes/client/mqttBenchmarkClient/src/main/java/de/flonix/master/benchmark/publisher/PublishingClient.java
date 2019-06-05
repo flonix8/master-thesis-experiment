@@ -1,4 +1,6 @@
-package de.flonix.master;
+package de.flonix.master.benchmark.publisher;
+
+import de.flonix.master.benchmark.CommandWaiter;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,24 +14,29 @@ public class PublishingClient {
     private List<LoadGenerator> activeLoadGenerators = new ArrayList<>();
     private List<LoadGenerator> finishedLoadGenerators = new ArrayList<>();
     private AtomicBoolean isRunning = new AtomicBoolean(false);
+    private final CommandWaiter commandWaiter;
 
     private PublishingClient(File configFile) {
+        commandWaiter = new CommandWaiter();
+
         parseConfigFile(configFile);
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
 
+        commandWaiter.waitForCommand("prepare");
         prepareMessages();
 
+        commandWaiter.waitForCommand("run");
         run();
 
         shutdown();
     }
 
     public static void main(String[] args) {
-        if (args.length != 1) throw new IllegalArgumentException("Need path to config file!");
+        if (args.length != 1) throw new IllegalArgumentException("Usage: <config_file_path>");
         File configFile = new File(args[0]);
         if (configFile.exists()) {
-            PublishingClient client = new PublishingClient(configFile);
+            new PublishingClient(configFile);
         } else {
             throw new IllegalArgumentException("Config file does not exist!");
         }
@@ -37,11 +44,12 @@ public class PublishingClient {
 
     private void prepareMessages() {
         activeLoadGenerators.forEach(LoadGenerator::prepareMessages);
+        System.out.println("Preparation done.");
     }
 
     private void run() {
         isRunning.set(true);
-        while (isRunning.get() && !activeLoadGenerators.isEmpty()) {
+        while (isRunning.get() && !activeLoadGenerators.isEmpty() && !commandWaiter.hasCommand("shutdown")) {
             activeLoadGenerators.forEach(gen -> {
                 if (gen.hasMessages()) {
                     gen.trigger(System.nanoTime());
@@ -58,12 +66,14 @@ public class PublishingClient {
             Files.lines(configFile.toPath()).forEach(configLine -> {
                 String[] configParams = configLine.split(DELIMITER);
 
-                String topic = configParams[0];
-                long interval = Long.valueOf(configParams[1]);
-                int runtime = Integer.valueOf(configParams[2]);
-                int payloadSize = Integer.valueOf(configParams[3]);
+                String serverURI = configParams[0];
+                String clientId = configParams[1];
+                String topic = configParams[2];
+                long interval = Long.valueOf(configParams[3]);
+                int runtime = Integer.valueOf(configParams[4]);
+                int payloadSize = Integer.valueOf(configParams[5]);
 
-                activeLoadGenerators.add(new LoadGenerator(topic, interval, runtime, payloadSize, MessageSender.getInstance()));
+                activeLoadGenerators.add(new LoadGenerator(topic, interval, runtime, payloadSize, MessageSender.getInstance(serverURI, clientId)));
             });
         } catch (IOException e) {
             e.printStackTrace();
@@ -74,5 +84,6 @@ public class PublishingClient {
         isRunning.set(false);
         activeLoadGenerators.forEach(LoadGenerator::shutdown);
         finishedLoadGenerators.forEach(LoadGenerator::shutdown);
+        commandWaiter.stop();
     }
 }

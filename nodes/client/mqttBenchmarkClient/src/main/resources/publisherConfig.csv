@@ -1,2 +1,2 @@
-/topic1;1000000000;10;200
-/topic2;1000000;5;500
+tcp://localhost:1883;testClient_topic1;/topic1;1000000000;10;200
+tcp://localhost:1883;testClient_topic2;/topic2;100000000;5;500
