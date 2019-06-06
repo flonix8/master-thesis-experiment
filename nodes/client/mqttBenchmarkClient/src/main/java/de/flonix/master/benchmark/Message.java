@@ -2,27 +2,27 @@ package de.flonix.master.benchmark;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.UUID;
 
 public class Message {
+    private static final byte DELIMITER_BYTE = ";".getBytes(StandardCharsets.US_ASCII)[0];
     private static final String DELIMITER = ";";
+    private static final byte[] randomString = RandomStringUtils.randomAlphanumeric(10000000).getBytes(StandardCharsets.US_ASCII);
     private String id;
     private String topic;
     private long sentTimestamp = 0;
     private String randomPayloadPadding;
+    private int payloadSize;
 
     public Message(String topic, int payloadSize) {
-        if (payloadSize < 58) throw new IllegalArgumentException("Payload must be larger than 57!");
+        if (payloadSize < 58 || payloadSize > 10000000) throw new IllegalArgumentException("Payload must be between 58 and 10,000,000!");
 
         this.topic = topic;
-
-        // generate random id
-        id = UUID.randomUUID().toString();
-
-        // generate random payload
-        randomPayloadPadding = RandomStringUtils.randomAlphanumeric(payloadSize - 2 - 19 - 36);
+        this.id = UUID.randomUUID().toString();
+        this.payloadSize = payloadSize;
     }
 
     private Message(String id, String topic, long timestamp, String randomPayloadPadding) {
@@ -51,7 +51,15 @@ public class Message {
         if (sentTimestamp == 0) {
             throw new NullPointerException("Payload has not been set yet due to missing sentTimestamp!");
         }
-        return (id + DELIMITER + String.format("%019d", sentTimestamp) + DELIMITER + randomPayloadPadding).getBytes(StandardCharsets.US_ASCII);
+        String timestamp = String.valueOf(sentTimestamp);
+        ByteBuffer payload = ByteBuffer.allocate(payloadSize);
+        payload.put(id.getBytes(StandardCharsets.US_ASCII));
+        payload.put(DELIMITER_BYTE);
+        payload.put(timestamp.getBytes(StandardCharsets.US_ASCII));
+        payload.put(DELIMITER_BYTE);
+        payload.put(randomString, 0, payloadSize - 2 - 36 - timestamp.length());
+
+        return payload.array();
     }
 
     public void setSentTimestamp() {

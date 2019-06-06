@@ -37,7 +37,6 @@ class LoadGenerator {
         boolean shouldTrigger = currentTick - lastTick >= interval;
         if (shouldTrigger) {
             lastTick = currentTick;
-            System.out.println("Runtime: " + runtime + ", Starttime: " + startTime);
             return true;
         } else {
             return false;
