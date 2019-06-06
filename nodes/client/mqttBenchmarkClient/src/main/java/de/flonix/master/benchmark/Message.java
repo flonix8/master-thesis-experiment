@@ -1,6 +1,7 @@
 package de.flonix.master.benchmark;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -9,33 +10,28 @@ import java.util.UUID;
 
 public class Message {
     private static final byte DELIMITER_BYTE = ";".getBytes(StandardCharsets.US_ASCII)[0];
-    private static final String DELIMITER = ";";
+    private static final String DELIM = ";";
     private static final byte[] randomString = RandomStringUtils.randomAlphanumeric(10000000).getBytes(StandardCharsets.US_ASCII);
     private String id;
     private String topic;
     private long sentTimestamp = 0;
-    private String randomPayloadPadding;
+    private long receivedTimestamp = 0;
     private int payloadSize;
+    private MqttMessage mqttMessage;
 
     public Message(String topic, int payloadSize) {
-        if (payloadSize < 58 || payloadSize > 10000000) throw new IllegalArgumentException("Payload must be between 58 and 10,000,000!");
+        if (payloadSize < 58 || payloadSize > 10000000)
+            throw new IllegalArgumentException("Payload must be between 58 and 10,000,000!");
 
         this.topic = topic;
         this.id = UUID.randomUUID().toString();
         this.payloadSize = payloadSize;
     }
 
-    private Message(String id, String topic, long timestamp, String randomPayloadPadding) {
-        this.id = id;
+    public Message(String topic, MqttMessage msg) {
         this.topic = topic;
-        this.sentTimestamp = timestamp;
-        this.randomPayloadPadding = randomPayloadPadding;
-    }
-
-    static Message fromRawMessage(String topic, byte[] payload) {
-        String s = new String(payload);
-        String[] values = s.split(DELIMITER, 3);
-        return new Message(values[0], topic, Long.getLong(values[1]), values[2]);
+        this.mqttMessage = msg;
+        this.payloadSize = msg.getPayload().length;
     }
 
     private static long getEpochMicro() {
@@ -43,11 +39,17 @@ public class Message {
         return (now.getEpochSecond() * 1000000) + (now.getNano() / 1000);
     }
 
+    public void parseMqttPayload() {
+        String[] payloadFields = new String(mqttMessage.getPayload(), StandardCharsets.US_ASCII).split(DELIM);
+        this.id = payloadFields[0];
+        this.sentTimestamp = Long.valueOf(payloadFields[1]);
+    }
+
     public String getTopic() {
         return topic;
     }
 
-    public byte[] getPayload() {
+    public byte[] getMqttPayload() {
         if (sentTimestamp == 0) {
             throw new NullPointerException("Payload has not been set yet due to missing sentTimestamp!");
         }
@@ -66,9 +68,17 @@ public class Message {
         this.sentTimestamp = getEpochMicro();
     }
 
+    public void setReceivedTimestamp() {
+        this.receivedTimestamp = getEpochMicro();
+    }
+
     @Override
     public String toString() {
-        return "Message(id=" + id + ", topic=" + topic + ", sentTimestamp=" + sentTimestamp + ", payloadSize=" + payloadSize + ")";
+        return "Message(id=" + id + ", topic=" + topic + ", sentTimestamp=" + sentTimestamp + ", receivedTimestamp=" + receivedTimestamp + ", payloadSize=" + payloadSize + ")";
+    }
+
+    public String toLogEntry() {
+        return id + DELIM + topic + DELIM + sentTimestamp + DELIM + receivedTimestamp + DELIM + payloadSize;
     }
 
 }

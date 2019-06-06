@@ -1,19 +1,26 @@
 package de.flonix.master.benchmark.subscriber;
 
+import de.flonix.master.benchmark.Message;
+import de.flonix.master.benchmark.MessageLogger;
 import org.eclipse.paho.client.mqttv3.*;
 
 import java.util.function.BiConsumer;
 
-public class MessageReceiver {
-    MqttClient mqttClient;
-    String topic;
-    String serverURI;
-    String clientId;
+class MessageReceiver {
+    private MqttClient mqttClient;
+    private String topic;
+    private String serverURI;
+    private String clientId;
+    private MessageLogger messageLogger;
 
-    public MessageReceiver(String serverURI, String clientId, String topic) {
+    MessageReceiver(String serverURI, String clientId, String topic) {
         this.topic = topic;
         this.serverURI = serverURI;
         this.clientId = clientId;
+        this.messageLogger = new MessageLogger(clientId, msg -> {
+            msg.parseMqttPayload();
+            return msg.toLogEntry();
+        });
     }
 
     private static MqttConnectOptions createConnectOptions() {
@@ -29,7 +36,9 @@ public class MessageReceiver {
             mqttClient = new MqttClient(serverURI, clientId, null);
             mqttClient.connect(createConnectOptions());
             mqttClient.setCallback(createCallback((msgTopic, msg) -> {
-                System.out.println(System.nanoTime() + ";" + msgTopic + ";" + msg.getPayload().length);
+                Message message = new Message(msgTopic, msg);
+                message.setReceivedTimestamp();
+                messageLogger.log(message);
             }));
             mqttClient.subscribe(topic);
         } catch (MqttException e) {
@@ -44,6 +53,7 @@ public class MessageReceiver {
         } catch (MqttException e) {
             e.printStackTrace();
         }
+        messageLogger.shutdown();
     }
 
     private MqttCallback createCallback(BiConsumer<String, MqttMessage> consumer) {

@@ -1,6 +1,7 @@
 package de.flonix.master.benchmark.publisher;
 
 import de.flonix.master.benchmark.Message;
+import de.flonix.master.benchmark.MessageLogger;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -14,11 +15,13 @@ class MessageSender {
     private MqttClient mqttClient;
     private String serverURI;
     private String clientId;
+    private MessageLogger messageLogger;
 
     private MessageSender(String serverURI, String clientId, ExecutorService executorService) {
         this.executorService = executorService;
         this.serverURI = serverURI;
         this.clientId = clientId;
+        this.messageLogger = new MessageLogger(clientId, Message::toLogEntry);
     }
 
     static MessageSender getInstance(String serverURI, String clientId) {
@@ -46,7 +49,8 @@ class MessageSender {
         executorService.execute(() -> {
             msg.setSentTimestamp();
             try {
-                mqttClient.publish(msg.getTopic(), msg.getPayload(), 0, false);
+                mqttClient.publish(msg.getTopic(), msg.getMqttPayload(), 0, false);
+                messageLogger.log(msg);
             } catch (MqttException e) {
                 e.printStackTrace();
             }
@@ -67,5 +71,6 @@ class MessageSender {
         } catch (MqttException e) {
             e.printStackTrace();
         }
+        messageLogger.shutdown();
     }
 }

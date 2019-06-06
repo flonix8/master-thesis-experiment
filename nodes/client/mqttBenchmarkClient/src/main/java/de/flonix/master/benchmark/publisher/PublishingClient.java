@@ -12,10 +12,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PublishingClient {
     private static final String DELIMITER = ";";
+    private final CommandWaiter commandWaiter;
     private List<LoadGenerator> loadGenerators = new ArrayList<>();
     private HashSet<LoadGenerator> finishedLoadGenerators = new HashSet<>();
     private AtomicBoolean isRunning = new AtomicBoolean(false);
-    private final CommandWaiter commandWaiter;
 
     private PublishingClient(File configFile) {
         commandWaiter = new CommandWaiter(PublishingClient.class.getSimpleName());
