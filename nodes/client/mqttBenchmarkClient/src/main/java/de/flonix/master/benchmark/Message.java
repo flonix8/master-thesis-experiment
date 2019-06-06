@@ -68,7 +68,7 @@ public class Message {
 
     @Override
     public String toString() {
-        return "Message(id=" + id + ", topic=" + topic + ", sentTimestamp=" + sentTimestamp + ", payloadSize=" + randomPayloadPadding.length() + ")";
+        return "Message(id=" + id + ", topic=" + topic + ", sentTimestamp=" + sentTimestamp + ", payloadSize=" + payloadSize + ")";
     }
 
 }

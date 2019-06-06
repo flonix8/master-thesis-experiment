@@ -6,22 +6,26 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PublishingClient {
     private static final String DELIMITER = ";";
     private List<LoadGenerator> loadGenerators = new ArrayList<>();
-    private List<LoadGenerator> finishedLoadGenerators = new ArrayList<>();
+    private HashSet<LoadGenerator> finishedLoadGenerators = new HashSet<>();
     private AtomicBoolean isRunning = new AtomicBoolean(false);
     private final CommandWaiter commandWaiter;
 
     private PublishingClient(File configFile) {
-        commandWaiter = new CommandWaiter();
+        commandWaiter = new CommandWaiter(PublishingClient.class.getSimpleName());
 
         parseConfigFile(configFile);
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
+
+        commandWaiter.waitForCommand("prepare");
+        prepare();
 
         commandWaiter.waitForCommand("run");
         run();
@@ -39,10 +43,14 @@ public class PublishingClient {
         }
     }
 
+    private void prepare() {
+        loadGenerators.forEach(LoadGenerator::prepare);
+    }
+
     private void run() {
         isRunning.set(true);
         loadGenerators.forEach(LoadGenerator::start);
-        while (isRunning.get() && !loadGenerators.isEmpty() && !commandWaiter.hasCommand("shutdown")) {
+        while (isRunning.get() && !commandWaiter.hasCommand("shutdown") && finishedLoadGenerators.size() != loadGenerators.size()) {
             loadGenerators.forEach(gen -> {
                 if (gen.hasMessages()) {
                     gen.trigger(System.nanoTime());
@@ -50,7 +58,6 @@ public class PublishingClient {
                     finishedLoadGenerators.add(gen);
                 }
             });
-            loadGenerators.removeAll(finishedLoadGenerators);
         }
     }
 
@@ -76,7 +83,6 @@ public class PublishingClient {
     private void shutdown() {
         isRunning.set(false);
         loadGenerators.forEach(LoadGenerator::shutdown);
-        finishedLoadGenerators.forEach(LoadGenerator::shutdown);
         commandWaiter.stop();
     }
 }

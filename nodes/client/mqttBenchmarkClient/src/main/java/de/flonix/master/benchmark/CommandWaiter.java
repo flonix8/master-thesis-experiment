@@ -6,11 +6,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CommandWaiter {
 
-    private static final String PIPE_NAME = "client_command_input";
+    private String pipe_name;
     private LinkedBlockingQueue<String> commands = new LinkedBlockingQueue<>();
     private AtomicBoolean isRunning = new AtomicBoolean(false);
 
-    public CommandWaiter() {
+    public CommandWaiter(String name) {
+        this.pipe_name = name + "_command_input";
         createPipe();
         startInputMonitor();
         waitForCommand("ready");
@@ -41,7 +42,7 @@ public class CommandWaiter {
 
     private void createPipe() {
         try {
-            (new ProcessBuilder("mkfifo", PIPE_NAME)).start().waitFor();
+            (new ProcessBuilder("mkfifo", pipe_name)).start().waitFor();
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }
@@ -49,7 +50,7 @@ public class CommandWaiter {
 
     private void deletePipe() {
         try {
-            (new ProcessBuilder("rm", PIPE_NAME)).start().waitFor();
+            (new ProcessBuilder("rm", pipe_name)).start().waitFor();
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }
@@ -59,7 +60,7 @@ public class CommandWaiter {
         new Thread(() -> {
             FileInputStream fileInputStream = null;
             try {
-                fileInputStream = new FileInputStream(PIPE_NAME);
+                fileInputStream = new FileInputStream(pipe_name);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }

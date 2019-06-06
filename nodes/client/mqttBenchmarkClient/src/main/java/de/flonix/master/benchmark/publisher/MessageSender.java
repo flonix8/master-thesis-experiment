@@ -12,16 +12,34 @@ import java.util.concurrent.TimeUnit;
 class MessageSender {
     private final ExecutorService executorService;
     private MqttClient mqttClient;
+    private String serverURI;
+    private String clientId;
 
     private MessageSender(String serverURI, String clientId, ExecutorService executorService) {
         this.executorService = executorService;
+        this.serverURI = serverURI;
+        this.clientId = clientId;
+    }
+
+    static MessageSender getInstance(String serverURI, String clientId) {
+        return new MessageSender(serverURI, clientId, Executors.newSingleThreadExecutor());
+    }
+
+    private static MqttConnectOptions createConnectOptions() {
+        MqttConnectOptions options = new MqttConnectOptions();
+        options.setAutomaticReconnect(false);
+        options.setCleanSession(true);
+        options.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
+        return options;
+    }
+
+    void connect() {
         try {
             mqttClient = new MqttClient(serverURI, clientId, null);
             mqttClient.connect(createConnectOptions());
         } catch (MqttException e) {
             e.printStackTrace();
         }
-
     }
 
     void sendMessage(Message msg) {
@@ -33,10 +51,6 @@ class MessageSender {
                 e.printStackTrace();
             }
         });
-    }
-
-    static MessageSender getInstance(String serverURI, String clientId) {
-        return new MessageSender(serverURI, clientId, Executors.newSingleThreadExecutor());
     }
 
     void shutdown() {
@@ -53,13 +67,5 @@ class MessageSender {
         } catch (MqttException e) {
             e.printStackTrace();
         }
-    }
-
-    private static MqttConnectOptions createConnectOptions() {
-        MqttConnectOptions options = new MqttConnectOptions();
-        options.setAutomaticReconnect(false);
-        options.setCleanSession(true);
-        options.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1_1);
-        return options;
     }
 }

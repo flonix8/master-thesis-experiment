@@ -5,7 +5,7 @@ import de.flonix.master.benchmark.Message;
 class LoadGenerator {
     private final long interval;
     private final String topic;
-    private long lastTick = System.nanoTime();
+    private long lastTick;
     private MessageSender messageSender;
     private long runtime;
     private int payloadSize;
@@ -29,8 +29,13 @@ class LoadGenerator {
         return System.nanoTime() - startTime < runtime;
     }
 
+    void prepare() {
+        messageSender.connect();
+    }
+
     void start() {
         startTime = System.nanoTime();
+        lastTick = startTime;
     }
 
     private Boolean checkTrigger(long currentTick) {
