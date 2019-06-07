@@ -35,10 +35,10 @@ public class Test {
         startTime = System.nanoTime();
 
         Message msg = new Message("testtest", 1000000);
-        msg.setSentTimestamp();
-        msg.getMqttPayload();
 
         System.out.println("Creating a new Message object with payloadSize=1000000: " + (System.nanoTime() - startTime) + "ns");
+        msg.setSentTimestamp();
+        msg.getMqttPayload();
 
     }
 }

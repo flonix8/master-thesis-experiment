@@ -5,6 +5,7 @@ import de.flonix.master.benchmark.MessageLogger;
 import org.eclipse.paho.client.mqttv3.*;
 
 import java.util.function.BiConsumer;
+import java.util.logging.Logger;
 
 class MessageReceiver {
     private MqttClient mqttClient;
@@ -13,7 +14,10 @@ class MessageReceiver {
     private String clientId;
     private MessageLogger messageLogger;
 
+    private final Logger log;
+
     MessageReceiver(String serverURI, String clientId, String topic) {
+        this.log = Logger.getLogger(this.getClass().getSimpleName() + "(" + topic + ")");
         this.topic = topic;
         this.serverURI = serverURI;
         this.clientId = clientId;

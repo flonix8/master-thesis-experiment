@@ -9,9 +9,18 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 
 public class PublishingClient {
     private static final String DELIMITER = ";";
+    private static final Logger log;
+
+    static {
+        System.setProperty("java.util.logging.SimpleFormatter.format",
+                "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS %4$s %3$s - %5$s%6$s%n");
+        log = Logger.getLogger(PublishingClient.class.getSimpleName());
+    }
+
     private final CommandWaiter commandWaiter;
     private List<LoadGenerator> loadGenerators = new ArrayList<>();
     private HashSet<LoadGenerator> finishedLoadGenerators = new HashSet<>();
@@ -45,6 +54,7 @@ public class PublishingClient {
 
     private void prepare() {
         loadGenerators.forEach(LoadGenerator::prepare);
+        log.info("Preparation done.");
     }
 
     private void run() {

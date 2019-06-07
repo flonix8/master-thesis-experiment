@@ -7,10 +7,19 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class SubscribingClient {
 
     private static final String DELIMITER = ";";
+    private static final Logger log;
+
+    static {
+        System.setProperty("java.util.logging.SimpleFormatter.format",
+                "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS %4$s %3$s - %5$s%6$s%n");
+        log = Logger.getLogger(SubscribingClient.class.getSimpleName());
+    }
+
     private CommandWaiter commandWaiter;
     private List<MessageReceiver> messageReceivers = new ArrayList<>();
 
@@ -24,7 +33,6 @@ public class SubscribingClient {
         commandWaiter.waitForCommand("prepare");
         prepare();
 
-        //commandWaiter.waitForCommand("run");
         run();
 
         shutdown();
@@ -42,6 +50,7 @@ public class SubscribingClient {
 
     private void prepare() {
         messageReceivers.forEach(MessageReceiver::connectAndSubscribe);
+        log.info("Preparation done. (Receivers are subscribed)");
     }
 
     private void run() {

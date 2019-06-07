@@ -3,6 +3,7 @@ package de.flonix.master.benchmark;
 import java.io.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 
 public class CommandWaiter {
 
@@ -10,11 +11,12 @@ public class CommandWaiter {
     private LinkedBlockingQueue<String> commands = new LinkedBlockingQueue<>();
     private AtomicBoolean isRunning = new AtomicBoolean(false);
 
+    private static final Logger log = Logger.getLogger(CommandWaiter.class.getSimpleName());
+
     public CommandWaiter(String name) {
         this.pipe_name = name + "_command_input";
         createPipe();
         startInputMonitor();
-        waitForCommand("ready");
     }
 
     public void stop() {
@@ -23,7 +25,7 @@ public class CommandWaiter {
     }
 
     public void waitForCommand(String command) {
-        System.out.println("Waiting for command: " + command);
+        log.info("Waiting for command: " + command);
         String nextCommand = "";
         do {
             try {
@@ -32,7 +34,6 @@ public class CommandWaiter {
                 e.printStackTrace();
             }
         } while (!nextCommand.equals(command));
-        System.out.println("Resuming after command: " + command);
     }
 
     public boolean hasCommand(String command) {
@@ -68,7 +69,6 @@ public class CommandWaiter {
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
             isRunning.set(true);
-            commands.add("ready");
 
             String line;
 
@@ -77,7 +77,7 @@ public class CommandWaiter {
                     line = bufferedReader.readLine();
                     if (line != null) {
                         commands.add(line);
-                        System.out.println("Received command: " + line);
+                        log.info("Received command: " + line);
                     }
                     Thread.sleep(100);
                 } catch (InterruptedException | IOException e) {

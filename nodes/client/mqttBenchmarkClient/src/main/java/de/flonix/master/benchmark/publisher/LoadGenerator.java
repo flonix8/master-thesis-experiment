@@ -2,6 +2,8 @@ package de.flonix.master.benchmark.publisher;
 
 import de.flonix.master.benchmark.Message;
 
+import java.util.logging.Logger;
+
 class LoadGenerator {
     private final long interval;
     private final String topic;
@@ -11,7 +13,10 @@ class LoadGenerator {
     private int payloadSize;
     private long startTime;
 
+    private final Logger log;
+
     LoadGenerator(String topic, long interval, int runtime, int payloadSize, MessageSender messageSender) {
+        this.log = Logger.getLogger(this.getClass().getSimpleName() + "(" + topic + ")");
         this.interval = interval;
         this.topic = topic;
         this.messageSender = messageSender;
@@ -34,6 +39,7 @@ class LoadGenerator {
     }
 
     void start() {
+        log.info("Starting to publish " + interval/1000 + "us apart for " + runtime/1000000000L + "s");
         startTime = System.nanoTime();
         lastTick = startTime;
     }
@@ -49,6 +55,7 @@ class LoadGenerator {
     }
 
     void shutdown() {
+        log.info("Finished run. Shutting down.");
         messageSender.shutdown();
     }
 }

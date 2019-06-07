@@ -33,7 +33,7 @@ public class MessageLogger {
             try (FileWriter fileWriter = new FileWriter(outputFile, true);
                  BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
 
-                while (isRunning.get()) {
+                while (isRunning.get() || !messages.isEmpty()) {
                     messages.drainTo(messagesToDump);
 
                     messagesToDump.forEach(msg -> {
@@ -44,12 +44,15 @@ public class MessageLogger {
 
                     messagesToDump.clear();
                     output.setLength(0);
+
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
+
+                bufferedWriter.flush();
 
             } catch (IOException e) {
                 e.printStackTrace();
