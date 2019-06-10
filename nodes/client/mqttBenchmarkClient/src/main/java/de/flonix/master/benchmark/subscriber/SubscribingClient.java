@@ -72,10 +72,11 @@ public class SubscribingClient {
         try {
             Files.lines(configFile.toPath()).forEach(configLine -> {
                 String[] configParams = configLine.split(DELIMITER);
+                if (!configParams[0].equals("subscriber")) return;
 
-                String serverURI = configParams[0];
-                String clientId = configParams[1];
-                String topic = configParams[2];
+                String serverURI = configParams[1];
+                String clientId = configParams[2];
+                String topic = configParams[3];
 
                 messageReceivers.add(new MessageReceiver(serverURI, clientId, topic));
             });

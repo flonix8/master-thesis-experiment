@@ -75,13 +75,14 @@ public class PublishingClient {
         try {
             Files.lines(configFile.toPath()).forEach(configLine -> {
                 String[] configParams = configLine.split(DELIMITER);
+                if (!configParams[0].equals("publisher")) return;
 
-                String serverURI = configParams[0];
-                String clientId = configParams[1];
-                String topic = configParams[2];
-                long interval = Long.valueOf(configParams[3]);
-                int runtime = Integer.valueOf(configParams[4]);
-                int payloadSize = Integer.valueOf(configParams[5]);
+                String serverURI = configParams[1];
+                String clientId = configParams[2];
+                String topic = configParams[3];
+                long interval = Long.valueOf(configParams[4]);
+                int runtime = Integer.valueOf(configParams[5]);
+                int payloadSize = Integer.valueOf(configParams[6]);
 
                 loadGenerators.add(new LoadGenerator(topic, interval, runtime, payloadSize, MessageSender.getInstance(serverURI, clientId)));
             });

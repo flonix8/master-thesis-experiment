@@ -1,2 +1,1 @@
-tcp://localhost:1883;subscriber_topic1;/topic1
-tcp://localhost:1883;subscriber_topic2;/topic2
+subscriber;tcp://localhost:1883;subscriber_topic1;/topic1
