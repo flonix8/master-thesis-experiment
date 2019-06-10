@@ -16,4 +16,4 @@ ansible-playbook -i inventory/ec2.py --key-file=keys/testbed.pem --ssh-common-ar
 ansible-playbook -i inventory/ec2.py --key-file=keys/testbed.pem --ssh-common-args="-o StrictHostKeyChecking=no" experiment.yml
 
 # Tear down setup
-#ansible-playbook --tags destroy infrastructure.yml
+#ansible-playbook --tags destroy infrastructure_bootstrap.yml
