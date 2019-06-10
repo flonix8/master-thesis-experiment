@@ -23,19 +23,22 @@ public class SubscribingClient {
     private CommandWaiter commandWaiter;
     private List<MessageReceiver> messageReceivers = new ArrayList<>();
 
-    SubscribingClient(File configFile) {
-        commandWaiter = new CommandWaiter(SubscribingClient.class.getSimpleName());
-
+    private SubscribingClient(File configFile) {
         parseConfigFile(configFile);
+        if (!messageReceivers.isEmpty()) {
+            commandWaiter = new CommandWaiter(SubscribingClient.class.getSimpleName());
 
-        Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
+            Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
 
-        commandWaiter.waitForCommand("prepare");
-        prepare();
+            commandWaiter.waitForCommand("prepare");
+            prepare();
 
-        run();
+            run();
 
-        shutdown();
+            shutdown();
+        } else {
+            log.warning("Did not find any configured message listeners. Exiting...");
+        }
     }
 
     public static void main(String[] args) {

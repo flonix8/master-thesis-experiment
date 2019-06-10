@@ -21,25 +21,28 @@ public class PublishingClient {
         log = Logger.getLogger(PublishingClient.class.getSimpleName());
     }
 
-    private final CommandWaiter commandWaiter;
+    private CommandWaiter commandWaiter;
     private List<LoadGenerator> loadGenerators = new ArrayList<>();
     private HashSet<LoadGenerator> finishedLoadGenerators = new HashSet<>();
     private AtomicBoolean isRunning = new AtomicBoolean(false);
 
     private PublishingClient(File configFile) {
-        commandWaiter = new CommandWaiter(PublishingClient.class.getSimpleName());
-
         parseConfigFile(configFile);
+        if (!loadGenerators.isEmpty()) {
+            commandWaiter = new CommandWaiter(PublishingClient.class.getSimpleName());
 
-        Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
+            Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
 
-        commandWaiter.waitForCommand("prepare");
-        prepare();
+            commandWaiter.waitForCommand("prepare");
+            prepare();
 
-        commandWaiter.waitForCommand("run");
-        run();
+            commandWaiter.waitForCommand("run");
+            run();
 
-        shutdown();
+            shutdown();
+        } else {
+            log.warning("Could not find any configured publishers. Exiting...");
+        }
     }
 
     public static void main(String[] args) {
