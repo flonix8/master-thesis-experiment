@@ -1091,10 +1091,9 @@ class Ec2Inventory(object):
             if self.nested_groups:
                 self.push_group(self.inventory, 'tags', 'tag_none')
 
-        # Add custom group based on tag_name
-        type_match = re.match(r'\S*_(broker|client)\d+', instance.tags['Name'])
-        if type_match is not None:
-            self.push(self.inventory, f'{type_match.group(1)}_nodes', hostname)
+        # Add custom group based on Role tag
+        if 'Role' in instance.tags:
+            self.push(self.inventory, f'{instance.tags["Role"]}_nodes', hostname)
             self.push(self.inventory, 'all_nodes', hostname)
 
         # Global Tag: tag all EC2 instances

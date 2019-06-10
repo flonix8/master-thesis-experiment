@@ -22,3 +22,6 @@ mockfog.pem
 
 # Ansible files
 **/*.retry
+
+# Stuff
+**/__pycache__

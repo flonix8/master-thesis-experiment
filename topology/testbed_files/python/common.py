@@ -2,7 +2,7 @@ import random
 import sys
 
 import networkx as nx
-from networkx import Graph
+from networkx import Graph, NetworkXNoCycle, NetworkXNoPath
 
 # .1, .2, .3, .255 are reserved by AWS
 ip_address_pool = ['10.0.2.' + str(i) for i in range(4, 255)]
@@ -40,3 +40,57 @@ def edge_attrs(**kwargs):
 
 def get_path_delay_between_machines(graph: Graph, src, dst):
     return nx.shortest_path_length(graph, source=src, target=dst, weight='delay')
+
+
+def build_name_to_ip(g: Graph):
+    name_to_ip = {}
+    machine_nodes = {attrs['name']: attrs['internal_ip'] for node, attrs in g.nodes(data=True) if
+                     attrs['type'] == 'machine'}
+    for node, attrs in machine_nodes:
+        name_to_ip[attrs['name']] = attrs['internal_ip']
+    return name_to_ip
+
+
+def validate_graph(g: Graph):
+    # Check for cycles (lets not allow cycles for now)
+    try:
+        nx.find_cycle(g)
+        print("Cycle found! Aborting...")
+        sys.exit(1)
+    except NetworkXNoCycle:
+        pass
+
+    # Check if graph is connected
+    try:
+        nx.is_connected(g)
+    except NetworkXNoPath:
+        print("Graph is not connected! Aborting...")
+        sys.exit(1)
+
+
+def fill_node_attrs(g: Graph):
+    # Add name and delay paths
+    machine_nodes = [(node, attrs) for node, attrs in g.nodes(data=True) if attrs['type'] == 'machine']
+    for node, attrs in machine_nodes:
+        attrs_update = {
+            'name': node,
+            'delay_paths': []
+        }
+        for dst_node, dst_attrs in filter(lambda n: n[0] != node, machine_nodes):
+            attrs_update['delay_paths'].append({
+                'target': dst_node,
+                'internal_ip': dst_attrs['internal_ip'],
+                'value': get_path_delay_between_machines(g, node, dst_node)
+            })
+        g.node[node].update(attrs_update)
+
+
+def resolve_names(g):
+    name_to_ip = {attrs['name']: attrs['internal_ip'] for node, attrs in g.nodes(data=True) if
+                  attrs['type'] == 'machine'}
+    machine_nodes = [(node, attrs) for node, attrs in g.nodes(data=True) if
+                     attrs['type'] == 'machine' and attrs['role'] == 'client']
+    for node, attrs in machine_nodes:
+        for config in attrs['client_config']:
+            config['internal_ip'] = name_to_ip[config['connect_to']]
+        g.node[node]['client_config'] = attrs['client_config']

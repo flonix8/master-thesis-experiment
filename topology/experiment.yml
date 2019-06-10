@@ -5,6 +5,7 @@
   become: yes
   roles:
     - moquette_broker
+  tags: broker
 
 - name: Prepare client nodes
   hosts: client_nodes
@@ -12,3 +13,4 @@
   become: yes
   roles:
     - client
+  tags: client

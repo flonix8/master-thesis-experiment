@@ -105,6 +105,7 @@
     instance_tags:
       Name: "{{ item.name }}"
       InternalIP: "{{ item.internal_ip }}"
+      Role: "{{ item.role }}"
   with_items: "{{ nodes }}"
   register: instance_creation
   async: 60

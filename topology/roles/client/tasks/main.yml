@@ -4,4 +4,38 @@
 
 - name: Install Mosquitto (package includes clients)
   command: yum -y install mosquitto
+
+- name: Install Docker SDK
+  pip:
+    name: docker-py
+
+- name: Start Docker service
+  service:
+    name: docker
+    state: started
+
+- name: Create mqttbenchclient folder
+  file:
+    path: /mqttbenchclient
+    state: directory
+
+- name: Write mqttbenchclient config
+  template:
+    src: client.conf.j2
+    dest: /mqttbenchclient/client.conf
   
+- name: Start mqttbenchclient container (subscriber)
+  docker_container:
+    name: mqttbenchclient_sub
+    image: flonix8/mqttbenchclient_sub
+    state: started
+    volumes:
+      - /mqttbenchclient/client.conf:/mqttbenchclient/client.conf
+  
+- name: Start mqttbenchclient container (publisher)
+  docker_container:
+    name: mqttbenchclient_pub
+    image: flonix8/mqttbenchclient_pub
+    state: started
+    volumes:
+      - /mqttbenchclient/client.conf:/mqttbenchclient/client.conf

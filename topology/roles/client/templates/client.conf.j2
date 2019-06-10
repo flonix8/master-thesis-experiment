@@ -1,0 +1,8 @@
+{% for config in hostvars[inventory_hostname].testbed_config.client_config %}
+{% if config.type == "publisher" %}
+publisher;tcp://{{ config.internal_ip }}:1883;publisher_{{ hostvars[inventory_hostname].testbed_config.name }}_{{ config.topic }};{{ config.topic }};{{ config.interval }};{{ config.runtime }};{{ config.payload_size }}
+{% endif %}
+{% if config.type == "subscriber" %}
+subscriber;tcp://{{ config.internal_ip }}:1883;subscriber_{{ hostvars[inventory_hostname].testbed_config.name }}_{{ config.topic }};{{ config.topic }}
+{% endif %}
+{% endfor %}
