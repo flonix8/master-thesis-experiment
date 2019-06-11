@@ -18,7 +18,7 @@ public class MessageLogger {
     private Function<Message, String> messageConverter;
 
     public MessageLogger(String clientId, Function<Message, String> messageConverter) {
-        this.outputFile = new File(clientId + "_log.csv");
+        this.outputFile = new File("results/" + clientId + "_log.csv");
         this.messageConverter = messageConverter;
         run();
     }
@@ -29,6 +29,8 @@ public class MessageLogger {
 
             List<Message> messagesToDump = new ArrayList<>();
             StringBuilder output = new StringBuilder();
+
+            outputFile.getParentFile().mkdirs();
 
             try (FileWriter fileWriter = new FileWriter(outputFile, true);
                  BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {

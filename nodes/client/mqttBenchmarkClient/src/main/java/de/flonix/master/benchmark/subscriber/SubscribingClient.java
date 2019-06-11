@@ -47,7 +47,7 @@ public class SubscribingClient {
         if (configFile.exists()) {
             new SubscribingClient(configFile);
         } else {
-            throw new IllegalArgumentException("Config file does not exist!");
+            throw new IllegalArgumentException("Config file does not exist: " + configFile.getAbsolutePath());
         }
     }
 

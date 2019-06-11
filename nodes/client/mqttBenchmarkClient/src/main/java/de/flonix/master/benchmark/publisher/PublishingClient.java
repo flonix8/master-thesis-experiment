@@ -51,7 +51,7 @@ public class PublishingClient {
         if (configFile.exists()) {
             new PublishingClient(configFile);
         } else {
-            throw new IllegalArgumentException("Config file does not exist!");
+            throw new IllegalArgumentException("Config file does not exist: " + configFile.getAbsolutePath());
         }
     }
 
