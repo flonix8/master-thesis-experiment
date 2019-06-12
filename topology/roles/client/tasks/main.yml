@@ -36,6 +36,9 @@
     dest: /mqttbenchclient/send_sub_command.sh
     mode: a+rx
 
+- name: Kill all running docker containers
+  shell: docker rm --force $(docker ps -aq) || true    
+
 - name: Pull mqttbenchclient image (subscriber)
   docker_image:
     name: flonix8/mqttbenchclient_sub
