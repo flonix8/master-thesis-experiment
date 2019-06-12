@@ -7,7 +7,7 @@
 
 - name: Install Docker SDK
   pip:
-    name: docker-py
+    name: docker
 
 - name: Start Docker service
   service:
@@ -23,19 +23,47 @@
   template:
     src: client.conf.j2
     dest: /mqttbenchclient/client.conf
+
+- name: Copy pub command script
+  copy:
+    src: send_pub_command.sh
+    dest: /mqttbenchclient/send_pub_command.sh
+    mode: a+rx
+
+- name: Copy sub command script
+  copy:
+    src: send_sub_command.sh
+    dest: /mqttbenchclient/send_sub_command.sh
+    mode: a+rx
+
+- name: Pull mqttbenchclient image (subscriber)
+  docker_image:
+    name: flonix8/mqttbenchclient_sub
+    source: pull
+    force_source: yes
+
+- name: Pull mqttbenchclient image (publisher)
+  docker_image:
+    name: flonix8/mqttbenchclient_pub
+    source: pull
+    force_source: yes
   
 - name: Start mqttbenchclient container (subscriber)
   docker_container:
     name: mqttbenchclient_sub
     image: flonix8/mqttbenchclient_sub
     state: started
+    auto_remove: yes
     volumes:
       - /mqttbenchclient/client.conf:/mqttbenchclient/client.conf
+      - /mqttbenchclient/results:/mqttbenchclient/results
   
 - name: Start mqttbenchclient container (publisher)
   docker_container:
     name: mqttbenchclient_pub
     image: flonix8/mqttbenchclient_pub
     state: started
+    auto_remove: yes
     volumes:
       - /mqttbenchclient/client.conf:/mqttbenchclient/client.conf
+      - /mqttbenchclient/results:/mqttbenchclient/results

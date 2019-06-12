@@ -1,7 +1,8 @@
 FROM azul/zulu-openjdk-alpine:11
 
-COPY ./mqttBenchmarkClient/target/mqttbenchclient-subscriber.jar /mqttbenchclient/
-
 WORKDIR /mqttbenchclient
 
-ENTRYPOINT [ "java", "-jar", "mqttbenchclient-subscriber.jar", "client.conf" ]
+COPY ./mqttBenchmarkClient/target/mqttbenchclient-subscriber.jar .
+
+ENTRYPOINT [ "java", "-jar", "mqttbenchclient-subscriber.jar" ]
+CMD [ "client.conf" ]

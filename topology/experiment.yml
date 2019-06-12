@@ -1,16 +1,49 @@
 ---
-- name: Prepare broker nodes
+- name: Setup broker nodes
   hosts: broker_nodes
   remote_user: ec2-user
   become: yes
   roles:
     - moquette_broker
-  tags: broker
+  tags: [ setup, broker ]
 
-- name: Prepare client nodes
+- name: Setup client nodes
   hosts: client_nodes
   remote_user: ec2-user
   become: yes
   roles:
     - client
-  tags: client
+  tags: [ setup, client ]
+
+- name: Communicate with clients (prepare and start benchmark)
+  hosts: client_nodes
+  remote_user: ec2-user
+  become: yes
+  tasks:
+  - name: Send signal "prepare" to subscriber clients
+    shell: /mqttbenchclient/send_sub_command.sh prepare
+    tags: prepare
+
+  - name: Send signal "prepare" to publisher clients
+    shell: /mqttbenchclient/send_pub_command.sh prepare
+    tags: prepare
+
+  - name: Send signal "run" to publisher clients
+    shell: /mqttbenchclient/send_pub_command.sh run
+    tags: run
+
+  - name: Send signal "shutdown" to subscriber clients
+    shell: /mqttbenchclient/send_sub_command.sh shutdown
+    tags: shutdown
+
+- name: Collect results
+  hosts: client_nodes
+  remote_user: ec2-user
+  become: yes
+  tasks:
+  - name: Get results 
+    synchronize:
+      mode: pull
+      src: /mqttbenchclient/results/
+      dest: ./results/
+  tags: collect
