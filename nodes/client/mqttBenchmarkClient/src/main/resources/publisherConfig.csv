@@ -1,1 +1,2 @@
-publisher;tcp://localhost:1883;publisher_topic1;/topic1;10000000;60;100
+publisher;tcp://127.0.0.1:1883;publisher_cloud1_client1_topic1;topic1;100;0;60;200
+publisher;tcp://127.0.0.1:1883;publisher_cloud1_client1_topic2;topic2;10;10;45;2000

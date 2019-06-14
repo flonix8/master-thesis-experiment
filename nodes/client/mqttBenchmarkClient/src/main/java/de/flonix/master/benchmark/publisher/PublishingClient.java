@@ -67,7 +67,7 @@ public class PublishingClient {
             loadGenerators.forEach(gen -> {
                 if (gen.hasMessages()) {
                     gen.trigger(System.nanoTime());
-                } else {
+                } else if (gen.isFinished()){
                     finishedLoadGenerators.add(gen);
                 }
             });
@@ -83,11 +83,12 @@ public class PublishingClient {
                 String serverURI = configParams[1];
                 String clientId = configParams[2];
                 String topic = configParams[3];
-                long interval = Long.valueOf(configParams[4]);
-                int runtime = Integer.valueOf(configParams[5]);
-                int payloadSize = Integer.valueOf(configParams[6]);
+                long frequency = Long.valueOf(configParams[4]);
+                int startOffset = Integer.valueOf(configParams[5]);
+                int runtime = Integer.valueOf(configParams[6]);
+                int payloadSize = Integer.valueOf(configParams[7]);
 
-                loadGenerators.add(new LoadGenerator(topic, interval, runtime, payloadSize, MessageSender.getInstance(serverURI, clientId)));
+                loadGenerators.add(new LoadGenerator(topic, frequency, startOffset, runtime, payloadSize, MessageSender.getInstance(serverURI, clientId)));
             });
         } catch (IOException e) {
             e.printStackTrace();
