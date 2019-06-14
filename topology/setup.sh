@@ -1,10 +1,7 @@
 #!/bin/bash
 
-# Activate venv
+# Activate venv (needed for inventory script)
 . .venv/bin/activate
-
-# Generate testbed config file
-testbed_files/python/generate_testbed_topology.py && \
 
 # Run topology setup
 ansible-playbook infrastructure_bootstrap.yml --tags bootstrap && \

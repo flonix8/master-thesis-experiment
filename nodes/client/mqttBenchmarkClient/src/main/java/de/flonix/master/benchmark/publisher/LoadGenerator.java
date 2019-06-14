@@ -5,7 +5,7 @@ import de.flonix.master.benchmark.Message;
 import java.util.logging.Logger;
 
 class LoadGenerator {
-    private static final long NANOS_IN_SEC = 1000000000L;
+    private static final long NANOS_IN_SEC = 1_000_000_000L;
     private final long interval;
     private final String topic;
     private final Logger log;

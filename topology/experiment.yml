@@ -19,6 +19,7 @@
   hosts: client_nodes
   remote_user: ec2-user
   become: yes
+  gather_facts: no
   tasks:
   - name: Send signal "prepare" to subscriber clients
     shell: /mqttbenchclient/send_sub_command.sh prepare
@@ -40,6 +41,7 @@
   hosts: client_nodes
   remote_user: ec2-user
   become: yes
+  gather_facts: no
   tasks:
   - name: Get results 
     synchronize:

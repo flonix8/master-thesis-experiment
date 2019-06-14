@@ -24,6 +24,15 @@
     src: moquette-log.properties.j2
     dest: /moquette/config/moquette-log.properties
 
+- name: Kill all running docker containers
+  shell: docker rm --force $(docker ps -aq) || true    
+
+- name: Pull moquette image
+  docker_image:
+    name: flonix8/moquette
+    source: pull
+    force_source: yes
+
 - name: Start moquette container
   docker_container:
     name: moquette

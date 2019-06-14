@@ -76,6 +76,119 @@ def ref_topo_1edge_linear(g: Graph):
     g.add_edge('edge1', 'cloud1', **edge_attrs(delay=20))
 
 
+def simple_bridge(g: Graph):
+    # Cloud zone #1
+    g.add_node('cloud1', **node_attrs(type='zone'))
+
+    g.add_node('cloud1_broker1', **node_attrs(role='broker'))
+    g.add_node('cloud1_client1', **node_attrs(role='client',
+                                              client_config=[
+                                                  {
+                                                      'type': 'publisher',
+                                                      'connect_to': 'cloud1_broker1',
+                                                      'topic': 'topic1',
+                                                      'interval': 10000000,
+                                                      'runtime': 60,
+                                                      'payload_size': 200
+                                                  }, {
+                                                      'type': 'publisher',
+                                                      'connect_to': 'cloud1_broker1',
+                                                      'topic': 'topic2',
+                                                      'interval': 100000000,
+                                                      'runtime': 30,
+                                                      'payload_size': 2000
+                                                  }]))
+
+    g.add_edge('cloud1_broker1', 'cloud1', **edge_attrs(delay=0))
+    g.add_edge('cloud1_client1', 'cloud1', **edge_attrs(delay=2))
+
+    # Edge zone 1
+    g.add_node('edge1', **node_attrs(type='zone'))
+
+    g.add_node('edge1_broker1', **node_attrs(role='broker'))
+    g.add_node('edge1_client1', **node_attrs(role='client',
+                                             client_config=[
+                                                 {
+                                                     'type': 'subscriber',
+                                                     'connect_to': 'edge1_broker1',
+                                                     'topic': 'topic1'
+                                                 }, {
+                                                     'type': 'subscriber',
+                                                     'connect_to': 'edge1_broker1',
+                                                     'topic': 'topic2'
+                                                 }
+                                             ]))
+
+    g.add_edge('edge1_broker1', 'edge1', **edge_attrs(delay=0))
+    g.add_edge('edge1_client1', 'edge1', **edge_attrs(delay=2))
+
+    # Connect zones
+    g.add_edge('cloud1', 'edge1', **edge_attrs(delay=0))
+
+
+def simple_bridge_local_sub(g: Graph):
+    # Cloud zone #1
+    g.add_node('cloud1', **node_attrs(type='zone'))
+
+    g.add_node('cloud1_broker1', **node_attrs(role='broker'))
+    g.add_node('cloud1_client1', **node_attrs(role='client',
+                                              client_config=[
+                                                  {
+                                                      'type': 'publisher',
+                                                      'connect_to': 'cloud1_broker1',
+                                                      'topic': 'topic1',
+                                                      'interval': 10000000,
+                                                      'runtime': 60,
+                                                      'payload_size': 200
+                                                  }, {
+                                                      'type': 'publisher',
+                                                      'connect_to': 'cloud1_broker1',
+                                                      'topic': 'topic2',
+                                                      'interval': 100000000,
+                                                      'runtime': 30,
+                                                      'payload_size': 2000
+                                                  }]))
+    g.add_node('cloud1_client2', **node_attrs(role='client',
+                                              client_config=[
+                                                  {
+                                                      'type': 'subscriber',
+                                                      'connect_to': 'cloud1_broker1',
+                                                      'topic': 'topic1'
+                                                  }, {
+                                                      'type': 'subscriber',
+                                                      'connect_to': 'cloud1_broker1',
+                                                      'topic': 'topic2'
+                                                  }
+                                              ]))
+
+    g.add_edge('cloud1_broker1', 'cloud1', **edge_attrs(delay=0))
+    g.add_edge('cloud1_client1', 'cloud1', **edge_attrs(delay=2))
+    g.add_edge('cloud1_client2', 'cloud1', **edge_attrs(delay=2))
+
+    # Edge zone 1
+    g.add_node('edge1', **node_attrs(type='zone'))
+
+    g.add_node('edge1_broker1', **node_attrs(role='broker'))
+    g.add_node('edge1_client1', **node_attrs(role='client',
+                                             client_config=[
+                                                 {
+                                                     'type': 'subscriber',
+                                                     'connect_to': 'edge1_broker1',
+                                                     'topic': 'topic1'
+                                                 }, {
+                                                     'type': 'subscriber',
+                                                     'connect_to': 'edge1_broker1',
+                                                     'topic': 'topic2'
+                                                 }
+                                             ]))
+
+    g.add_edge('edge1_broker1', 'edge1', **edge_attrs(delay=0))
+    g.add_edge('edge1_client1', 'edge1', **edge_attrs(delay=2))
+
+    # Connect zones
+    g.add_edge('cloud1', 'edge1', **edge_attrs(delay=0))
+
+
 def debug_topology(g: Graph):
     # Cloud zone #1
     g.add_node('cloud1', **node_attrs(type='zone'))
@@ -114,4 +227,3 @@ def debug_topology(g: Graph):
     g.add_edge('cloud1_broker1', 'cloud1', **edge_attrs(delay=2))
     g.add_edge('cloud1_client1', 'cloud1', **edge_attrs(delay=2))
     g.add_edge('cloud1_client2', 'cloud1', **edge_attrs(delay=2))
-
