@@ -1,2 +1,3 @@
+# type ; serverURI ; clientID ; topic
 subscriber;tcp://127.0.0.1:1883;subscriber_cloud1_client2_topic1;topic1
 subscriber;tcp://127.0.0.1:1883;subscriber_cloud1_client2_topic2;topic2

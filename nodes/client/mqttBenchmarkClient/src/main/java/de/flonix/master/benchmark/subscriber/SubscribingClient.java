@@ -74,6 +74,9 @@ public class SubscribingClient {
     private void parseConfigFile(File configFile) {
         try {
             Files.lines(configFile.toPath()).forEach(configLine -> {
+                // Allow for comments
+                if (configLine.startsWith("#")) return;
+
                 String[] configParams = configLine.split(DELIMITER);
                 if (!configParams[0].equals("subscriber")) return;
 
