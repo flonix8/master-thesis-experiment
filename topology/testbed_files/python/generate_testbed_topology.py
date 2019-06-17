@@ -11,7 +11,7 @@ g = nx.Graph()
 
 # Generate topology
 
-topologies.simple_bridge_local_sub(g)
+topologies.debug_topology(g)
 
 # Process graph
 

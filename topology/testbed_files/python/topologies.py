@@ -1,6 +1,6 @@
 from networkx.classes import Graph
 
-from common import node_attrs, edge_attrs
+from common import node_attrs, edge_attrs, sub_config, pub_config
 
 
 def reference_topology(g: Graph):
@@ -87,14 +87,16 @@ def simple_bridge(g: Graph):
                                                       'type': 'publisher',
                                                       'connect_to': 'cloud1_broker1',
                                                       'topic': 'topic1',
-                                                      'interval': 10000000,
+                                                      'frequency': 100,
+                                                      'start_offset': 0,
                                                       'runtime': 60,
                                                       'payload_size': 200
                                                   }, {
                                                       'type': 'publisher',
                                                       'connect_to': 'cloud1_broker1',
                                                       'topic': 'topic2',
-                                                      'interval': 100000000,
+                                                      'frequency': 10,
+                                                      'start_offset': 0,
                                                       'runtime': 30,
                                                       'payload_size': 2000
                                                   }]))
@@ -137,14 +139,16 @@ def simple_bridge_local_sub(g: Graph):
                                                       'type': 'publisher',
                                                       'connect_to': 'cloud1_broker1',
                                                       'topic': 'topic1',
-                                                      'interval': 10000000,
+                                                      'frequency': 100,
+                                                      'start_offset': 0,
                                                       'runtime': 60,
                                                       'payload_size': 200
                                                   }, {
                                                       'type': 'publisher',
                                                       'connect_to': 'cloud1_broker1',
                                                       'topic': 'topic2',
-                                                      'interval': 100000000,
+                                                      'frequency': 10,
+                                                      'start_offset': 0,
                                                       'runtime': 30,
                                                       'payload_size': 2000
                                                   }]))
@@ -196,32 +200,27 @@ def debug_topology(g: Graph):
     g.add_node('cloud1_broker1', **node_attrs(role='broker'))
     g.add_node('cloud1_client1', **node_attrs(role='client',
                                               client_config=[
-                                                  {
-                                                      'type': 'publisher',
-                                                      'connect_to': 'cloud1_broker1',
-                                                      'topic': 'topic1',
-                                                      'interval': 10000000,
-                                                      'runtime': 60,
-                                                      'payload_size': 200
-                                                  }, {
-                                                      'type': 'publisher',
-                                                      'connect_to': 'cloud1_broker1',
-                                                      'topic': 'topic2',
-                                                      'interval': 100000000,
-                                                      'runtime': 45,
-                                                      'payload_size': 2000
-                                                  }]))
+                                                  pub_config(
+                                                      connect_to='cloud1_broker1',
+                                                      topic='topic1',
+                                                      frequency=100
+                                                  ),
+                                                  pub_config(
+                                                      connect_to='cloud1_broker1',
+                                                      topic='topic2',
+                                                      frequency=10,
+                                                      payload_size=2000
+                                                  )]))
     g.add_node('cloud1_client2', **node_attrs(role='client',
                                               client_config=[
-                                                  {
-                                                      'type': 'subscriber',
-                                                      'connect_to': 'cloud1_broker1',
-                                                      'topic': 'topic1'
-                                                  }, {
-                                                      'type': 'subscriber',
-                                                      'connect_to': 'cloud1_broker1',
-                                                      'topic': 'topic2'
-                                                  }
+                                                  sub_config(
+                                                      connect_to='cloud1_broker1',
+                                                      topic='topic1'
+                                                  ),
+                                                  sub_config(
+                                                      connect_to='cloud1_broker1',
+                                                      topic='topic2'
+                                                  )
                                               ]))
 
     g.add_edge('cloud1_broker1', 'cloud1', **edge_attrs(delay=2))

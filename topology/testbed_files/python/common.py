@@ -22,20 +22,52 @@ def node_attrs(**kwargs):
         'type': 'machine',
         'flavor': 't3.nano',
         'bandwidth_out': 10000,
-        'internal_ip': generate_random_ip()
+        'internal_ip': generate_random_ip(),
+        **kwargs,
     }
-    for k, v in kwargs.items():
-        attrs[k] = v
+    assert 'type' in attrs
+    assert 'flavor' in attrs
+    assert 'bandwidth_out' in attrs
+    assert 'internal_ip' in attrs
     return attrs
 
 
 def edge_attrs(**kwargs):
     attrs = {
         'delay': 0,
+        **kwargs,
     }
-    for k, v in kwargs.items():
-        attrs[k] = v
+    assert 'delay' in attrs
     return attrs
+
+
+def sub_config(**kwargs):
+    config = {
+        'type': 'subscriber',
+        **kwargs,
+    }
+    assert 'type' in config
+    assert 'connect_to' in config
+    assert 'topic' in config
+    return config
+
+
+def pub_config(**kwargs):
+    config = {
+        'type': 'publisher',
+        'start_offset': 0,
+        'runtime': 60,
+        'payload_size': 200,
+        **kwargs,
+    }
+    assert 'type' in config
+    assert 'connect_to' in config
+    assert 'topic' in config
+    assert 'frequency' in config
+    assert 'start_offset' in config
+    assert 'runtime' in config
+    assert 'payload_size' in config
+    return config
 
 
 def get_path_delay_between_machines(graph: Graph, src, dst):
