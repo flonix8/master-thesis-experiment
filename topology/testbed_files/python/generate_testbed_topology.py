@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
+import sys
+
 import networkx as nx
 import yaml
-import sys
+from matplotlib import pyplot as plt
 
 import topologies
 from common import validate_graph, fill_node_attrs, resolve_names
@@ -11,7 +13,7 @@ g = nx.Graph()
 
 # Generate topology
 
-topologies.debug_topology(g)
+topologies.reference_topology(g)
 
 # Process graph
 
@@ -32,5 +34,5 @@ with open(f'{sys.path[0]}/../testbed_topology.yml', 'w') as file:
     file.write(yaml.dump(topo, default_flow_style=False, sort_keys=False, explicit_start=True))
 
 # Show graph for a quick sanity check
-# nx.draw_networkx(g)
-# plt.show()
+nx.draw_networkx(g)
+plt.show()

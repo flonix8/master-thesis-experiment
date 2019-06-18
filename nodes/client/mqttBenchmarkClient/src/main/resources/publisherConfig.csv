@@ -1,3 +1,2 @@
 # type ; serverURI ; clientId ; topic ; frequency ; startOffset ; runtime ; payloadSize
-publisher;tcp://127.0.0.1:1883;publisher_cloud1_client1_topic1;topic1;100;0;60;200
-publisher;tcp://127.0.0.1:1883;publisher_cloud1_client1_topic2;topic2;10;10;45;2000
+publisher;tcp://127.0.0.1:1883;publisher_edge1_client1_edge-to-cloud/aggregated-data;edge-to-cloud/aggregated-data;1;0;40;500000

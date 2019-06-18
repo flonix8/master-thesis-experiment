@@ -49,3 +49,14 @@
       src: /mqttbenchclient/results/
       dest: ./results/
   tags: collect
+
+- name: Clear results
+  hosts: client_nodes
+  remote_user: ec2-user
+  become: yes
+  tasks:
+  - name: Delete results folder
+    file:
+      path: /mqttbenchclient/results
+      state: absent
+  tags: clear
