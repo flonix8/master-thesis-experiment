@@ -1,9 +1,9 @@
 ---
-- name: Add EPEL repositories
-  command: amazon-linux-extras install -y epel
+# - name: Add EPEL repositories
+#   command: amazon-linux-extras install -y epel
 
-- name: Install Mosquitto (package includes clients)
-  command: yum -y install mosquitto
+# - name: Install Mosquitto (package includes clients)
+#   command: yum -y install mosquitto
 
 - name: Install Docker SDK
   pip:
@@ -57,6 +57,7 @@
     image: flonix8/mqttbenchclient_sub
     state: started
     auto_remove: yes
+    log_driver: journald
     volumes:
       - /mqttbenchclient/client.conf:/mqttbenchclient/client.conf
       - /mqttbenchclient/results:/mqttbenchclient/results
@@ -67,6 +68,7 @@
     image: flonix8/mqttbenchclient_pub
     state: started
     auto_remove: yes
+    log_driver: journald
     volumes:
       - /mqttbenchclient/client.conf:/mqttbenchclient/client.conf
       - /mqttbenchclient/results:/mqttbenchclient/results
