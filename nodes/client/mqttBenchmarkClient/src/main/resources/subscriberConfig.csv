@@ -1,2 +1,3 @@
 # type ; serverURI ; clientID ; topic
-subscriber;tcp://127.0.0.1:1883;subscriber_edge1_client1_edge-to-cloud/aggregated-data;edge-to-cloud/aggregated-data
+subscriber;tcp://127.0.0.1:1883;test_subscriber_large;/test/large
+subscriber;tcp://127.0.0.1:1883;test_subscriber_small;/test/small
