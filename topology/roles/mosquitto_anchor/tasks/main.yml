@@ -9,6 +9,14 @@
     name: docker
     state: started
 
+- name: Kill all running docker containers
+  shell: docker rm --force $(docker ps -aq) || true    
+
+- name: Delete logs folder
+  file:
+    path: /mosquitto/logs
+    state: absent
+
 - name: Create logs folder
   file:
     path: /mosquitto/logs
@@ -19,9 +27,6 @@
   template:
     src: mosquitto.conf.j2
     dest: /mosquitto/mosquitto.conf
-
-- name: Kill all running docker containers
-  shell: docker rm --force $(docker ps -aq) || true    
 
 - name: Pull mosquitto image
   docker_image:

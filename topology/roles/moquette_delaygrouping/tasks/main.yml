@@ -9,28 +9,34 @@
     name: docker
     state: started
 
-- name: Create config folder
-  file:
-    path: /moquette/config
-    state: directory
-
-- name: Create results folder
-  file:
-    path: /moquette/results
-    state: directory
-
-- name: Write moquette config
-  template:
-    src: moquette.conf.j2
-    dest: /moquette/config/moquette.conf
-
-- name: Write logging config
-  template:
-    src: moquette-log.properties.j2
-    dest: /moquette/config/moquette-log.properties
-
 - name: Kill all running docker containers
   shell: docker rm --force $(docker ps -aq) || true    
+
+- name: Delete all folders
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /moquette/config
+    - /moquette/results
+    - /moquette/logs
+
+- name: Create folders
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /moquette/config
+    - /moquette/results
+    - /moquette/logs
+
+- name: Write config files
+  template:
+    src: "{{ item }}.j2"
+    dest: "/moquette/config/{{ item }}"
+  with_items:
+    - moquette.conf
+    - moquette-log.properties
 
 - name: Pull moquette image
   docker_image:

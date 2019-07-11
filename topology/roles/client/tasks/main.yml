@@ -5,6 +5,11 @@
 # - name: Install Mosquitto (package includes clients)
 #   command: yum -y install mosquitto
 
+- name: Remove folder
+  file:
+    path: /mqttbenchclient
+    state: absent
+
 - name: Install Docker SDK
   pip:
     name: docker
@@ -24,51 +29,38 @@
     src: client.conf.j2
     dest: /mqttbenchclient/client.conf
 
-- name: Copy pub command script
+- name: Copy scripts
   copy:
-    src: send_pub_command.sh
-    dest: /mqttbenchclient/send_pub_command.sh
+    src: "{{ item }}"
+    dest: "/mqttbenchclient/{{ item }}"
     mode: a+rx
-
-- name: Copy sub command script
-  copy:
-    src: send_sub_command.sh
-    dest: /mqttbenchclient/send_sub_command.sh
-    mode: a+rx
+  with_items:
+    - send_pub_command.sh
+    - send_sub_command.sh
 
 - name: Kill all running docker containers
   shell: docker rm --force $(docker ps -aq) || true    
 
-- name: Pull mqttbenchclient image (subscriber)
+- name: Pull mqttbenchclient images
   docker_image:
-    name: flonix8/mqttbenchclient_sub
+    name: "flonix8/{{ item }}"
     source: pull
     force_source: yes
-
-- name: Pull mqttbenchclient image (publisher)
-  docker_image:
-    name: flonix8/mqttbenchclient_pub
-    source: pull
-    force_source: yes
+  with_items:
+    - mqttbenchclient_sub
+    - mqttbenchclient_pub
   
-- name: Start mqttbenchclient container (subscriber)
+- name: Start mqttbenchclient containers
   docker_container:
-    name: mqttbenchclient_sub
-    image: flonix8/mqttbenchclient_sub
+    name: "{{ item }}"
+    image: "flonix8/{{ item }}"
     state: started
     auto_remove: yes
     log_driver: journald
     volumes:
       - /mqttbenchclient/client.conf:/mqttbenchclient/client.conf
       - /mqttbenchclient/results:/mqttbenchclient/results
+  with_items:
+    - mqttbenchclient_sub
+    - mqttbenchclient_pub
   
-- name: Start mqttbenchclient container (publisher)
-  docker_container:
-    name: mqttbenchclient_pub
-    image: flonix8/mqttbenchclient_pub
-    state: started
-    auto_remove: yes
-    log_driver: journald
-    volumes:
-      - /mqttbenchclient/client.conf:/mqttbenchclient/client.conf
-      - /mqttbenchclient/results:/mqttbenchclient/results
