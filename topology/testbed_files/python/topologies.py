@@ -23,8 +23,8 @@ def reference_topology_bridge(g: Graph):
                                                       topic='/traffic-control/camera-feed/#',
                                                   ),
                                               ]))
-    g.add_node('cloud1_broker1', **node_attrs(role='broker'))
-    # Edge nodes
+    g.add_node('cloud1_broker1', **node_attrs(role='broker'), flavor='t3.micro')
+    # Edge zone #1
     g.add_node('edge1', **node_attrs(type='zone'))
     g.add_node('edge1_client1', **node_attrs(role='client',
                                              client_config=[
@@ -104,14 +104,39 @@ def reference_topology_bridge(g: Graph):
                                                      payload_size=200,
                                                  ),
                                              ]))
-    g.add_node('edge1_broker1', **node_attrs(role='broker'))
-    g.add_node('edge1_broker2', **node_attrs(role='broker'))
-    g.add_node('edge1_broker3', **node_attrs(role='broker'))
+    g.add_node('edge1_broker1', **node_attrs(role='broker', flavor='t3.micro'))
+    g.add_node('edge1_broker2', **node_attrs(role='broker', flavor='t3.micro'))
+    g.add_node('edge1_broker3', **node_attrs(role='broker', flavor='t3.micro'))
+    # Edge zone #2
+    g.add_node('edge2', **node_attrs(type='zone'))
+    g.add_node('edge2_client1', **node_attrs(role='client',
+                                             client_config=[
+                                                 pub_config(
+                                                     connect_to='edge2_broker1',
+                                                     topic='/traffic-control/camera-feed/2',
+                                                     frequency=20,
+                                                     payload_size=500000,
+                                                 ),
+                                                 sub_config(
+                                                     connect_to='edge2_broker1',
+                                                     topic='/car-telemetry/realtime/5',
+                                                 ),
+                                             ]))
+    g.add_node('edge2_client2', **node_attrs(role='client',
+                                             client_config=[
+                                                 pub_config(
+                                                     connect_to='edge2_broker1',
+                                                     topic='/car-telemetry/realtime/5',
+                                                     frequency=100,
+                                                     payload_size=200,
+                                                 ),
+                                             ]))
+    g.add_node('edge2_broker1', **node_attrs(role='broker', flavor='t3.micro'))
 
     # Connect cloud
     g.add_edge('cloud1_broker1', 'cloud1', **edge_attrs(delay=2))
     g.add_edge('cloud1_client1', 'cloud1', **edge_attrs(delay=2))
-    # Connect edge
+    # Connect edge #1
     g.add_edge('edge1_client1', 'edge1_broker1', **edge_attrs(delay=2))
     g.add_edge('edge1_client2', 'edge1_broker2', **edge_attrs(delay=2))
     g.add_edge('edge1_client3', 'edge1_broker3', **edge_attrs(delay=2))
@@ -119,9 +144,14 @@ def reference_topology_bridge(g: Graph):
     g.add_edge('edge1_broker1', 'edge1_broker2', **edge_attrs(delay=2))
     g.add_edge('edge1_broker2', 'edge1_broker3', **edge_attrs(delay=2))
     g.add_edge('edge1', 'edge1_broker1', **edge_attrs())
+    # Connect edge #2
+    g.add_edge('edge2_client1', 'edge2_broker1', **edge_attrs(delay=2))
+    g.add_edge('edge2_client2', 'edge2_broker1', **edge_attrs(delay=2))
+    g.add_edge('edge2', 'edge2_broker1', **edge_attrs())
 
     # Connect to cloud
     g.add_edge('edge1', 'cloud1', **edge_attrs(delay=20))
+    g.add_edge('edge2', 'cloud1', **edge_attrs(delay=20))
 
 
 def reference_topology_delaygrouping(g: Graph):
