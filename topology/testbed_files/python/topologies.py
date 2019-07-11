@@ -137,7 +137,7 @@ def reference_topology_delaygrouping(g: Graph):
                                                   ),
                                                   sub_config(
                                                       connect_to='cloud1_broker1',
-                                                      topic='#',
+                                                      topic='/#',
                                                   ),
                                               ]))
     g.add_node('cloud1_broker1', **node_attrs(role='anchor', internal_ip='10.0.2.10'))

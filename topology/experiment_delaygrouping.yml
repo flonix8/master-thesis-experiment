@@ -122,7 +122,7 @@
   remote_user: ec2-user
   become: yes
   tasks:
-  - name: Delete log file
+  - name: Truncate log files
     shell: for file in /moquette/logs/*; do >$file;done || true
   tags: clear
 
@@ -131,6 +131,6 @@
   remote_user: ec2-user
   become: yes
   tasks:
-  - name: Delete log file
+  - name: Truncate log files
     shell: for file in /mosquitto/logs/*; do >$file;done || true
   tags: clear
