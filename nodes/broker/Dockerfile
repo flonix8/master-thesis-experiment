@@ -1,7 +1,8 @@
 #FROM alpine:3.9
 
-#RUN apk add openjdk8-jre-base
-FROM openjdk:8-jre-slim
+FROM openjdk:11-jre-slim
+
+RUN apt update && apt install -y iputils-ping
 
 COPY --from=moquette-build /moquette /moquette
 

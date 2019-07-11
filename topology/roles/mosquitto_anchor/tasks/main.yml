@@ -1,0 +1,41 @@
+---
+
+- name: Install Docker SDK
+  pip:
+    name: docker-py
+
+- name: Start Docker service
+  service:
+    name: docker
+    state: started
+
+- name: Create logs folder
+  file:
+    path: /mosquitto/logs
+    state: directory
+    mode: o=rwx
+
+- name: Write mosquitto config
+  template:
+    src: mosquitto.conf.j2
+    dest: /mosquitto/mosquitto.conf
+
+- name: Kill all running docker containers
+  shell: docker rm --force $(docker ps -aq) || true    
+
+- name: Pull mosquitto image
+  docker_image:
+    name: eclipse-mosquitto
+    source: pull
+    force_source: yes
+
+- name: Start mosquitto container
+  docker_container:
+    name: mosquitto
+    image: eclipse-mosquitto
+    state: started
+    volumes:
+      - /mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - /mosquitto/logs:/mosquitto/log
+    ports:
+      - "1883:1883"

@@ -1,0 +1,52 @@
+---
+
+- name: Install Docker SDK
+  pip:
+    name: docker-py
+
+- name: Start Docker service
+  service:
+    name: docker
+    state: started
+
+- name: Create config folder
+  file:
+    path: /moquette/config
+    state: directory
+
+- name: Create results folder
+  file:
+    path: /moquette/results
+    state: directory
+
+- name: Write moquette config
+  template:
+    src: moquette.conf.j2
+    dest: /moquette/config/moquette.conf
+
+- name: Write logging config
+  template:
+    src: moquette-log.properties.j2
+    dest: /moquette/config/moquette-log.properties
+
+- name: Kill all running docker containers
+  shell: docker rm --force $(docker ps -aq) || true    
+
+- name: Pull moquette image
+  docker_image:
+    name: flonix8/moquette
+    source: pull
+    force_source: yes
+
+- name: Start moquette container
+  docker_container:
+    name: moquette
+    image: flonix8/moquette
+    state: started
+    volumes:
+      - /moquette/config:/moquette/config
+      - /moquette/logs:/moquette/bin/logs
+      - /moquette/results:/moquette/bin/results
+    ports:
+      - "1883:1883"
+      - "1884:1884"

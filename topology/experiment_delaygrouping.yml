@@ -1,10 +1,18 @@
 ---
+- name: Setup cloud anchor node
+  hosts: anchor_nodes
+  remote_user: ec2-user
+  become: yes
+  roles:
+    - mosquitto_anchor
+  tags: [ setup, anchor ]
+
 - name: Setup broker nodes
   hosts: broker_nodes
   remote_user: ec2-user
   become: yes
   roles:
-    - moquette_broker
+    - moquette_delaygrouping
   tags: [ setup, broker ]
 
 - name: Setup client nodes
@@ -53,15 +61,15 @@
     synchronize:
       mode: pull
       src: /mqttbenchclient/logs/
-      dest: ./logs/
+      dest: ./logs/clients/
   - name: Get results 
     synchronize:
       mode: pull
       src: /mqttbenchclient/results/
-      dest: ./results/
+      dest: ./results/clients/
   tags: collect
 
-- name: Collect logs from brokers
+- name: Collect results and logs from brokers
   hosts: broker_nodes
   remote_user: ec2-user
   become: yes
@@ -71,7 +79,27 @@
     synchronize:
       mode: pull
       src: /moquette/logs/
-      dest: ./logs/
+      dest: ./logs/brokers/
+  - name: Get message logs
+    synchronize:
+      mode: pull
+      src: /moquette/results
+      dest: ./results/brokers/
+  tags: collect
+
+- name: Collect results and logs from cloud anchor
+  hosts: anchor_nodes
+  remote_user: ec2-user
+  become: yes
+  gather_facts: no
+  tasks:
+  - name: Force mosquitto to flush its logs (by triggering a config reload)
+    shell: docker exec mosquitto killall -SIGHUP mosquitto
+  - name: Get mosquitto logs 
+    synchronize:
+      mode: pull
+      src: /mosquitto/logs/
+      dest: ./logs/anchor/
   tags: collect
 
 - name: Clear clients
@@ -95,5 +123,14 @@
   become: yes
   tasks:
   - name: Delete log file
-    shell: for file in /mqttbenchclient/logs/*; do >$file;done || true
+    shell: for file in /moquette/logs/*; do >$file;done || true
+  tags: clear
+
+- name: Clear cloud anchor
+  hosts: anchor_nodes
+  remote_user: ec2-user
+  become: yes
+  tasks:
+  - name: Delete log file
+    shell: for file in /mosquitto/logs/*; do >$file;done || true
   tags: clear

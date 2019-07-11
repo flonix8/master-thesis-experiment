@@ -1,0 +1,99 @@
+---
+- name: Setup broker nodes
+  hosts: broker_nodes
+  remote_user: ec2-user
+  become: yes
+  roles:
+    - moquette_bridge
+  tags: [ setup, broker ]
+
+- name: Setup client nodes
+  hosts: client_nodes
+  remote_user: ec2-user
+  become: yes
+  roles:
+    - client
+  tags: [ setup, client ]
+
+- name: Communicate with clients (prepare and start benchmark)
+  hosts: client_nodes
+  remote_user: ec2-user
+  become: yes
+  gather_facts: no
+  tasks:
+  - name: Send signal "prepare" to subscriber clients
+    shell: /mqttbenchclient/send_sub_command.sh prepare
+    tags: prepare
+
+  - name: Send signal "prepare" to publisher clients
+    shell: /mqttbenchclient/send_pub_command.sh prepare
+    tags: prepare
+
+  - name: Send signal "run" to publisher clients
+    shell: /mqttbenchclient/send_pub_command.sh run
+    tags: run
+
+  - name: Send signal "shutdown" to subscriber clients
+    shell: /mqttbenchclient/send_sub_command.sh shutdown
+    tags: shutdown
+
+- name: Collect results from clients
+  hosts: client_nodes
+  remote_user: ec2-user
+  become: yes
+  gather_facts: no
+  tasks:
+  - name: Make log folder
+    shell: mkdir -p /mqttbenchclient/logs
+  - name: Save docker logs (sub)
+    shell: journalctl CONTAINER_NAME=mqttbenchclient_sub > /mqttbenchclient/logs/{{ hostvars[inventory_hostname].testbed_config.name }}_sub.log
+  - name: Save docker logs (pub)
+    shell: journalctl CONTAINER_NAME=mqttbenchclient_pub > /mqttbenchclient/logs/{{ hostvars[inventory_hostname].testbed_config.name }}_pub.log
+  - name: Get logs
+    synchronize:
+      mode: pull
+      src: /mqttbenchclient/logs/
+      dest: ./logs/
+  - name: Get results 
+    synchronize:
+      mode: pull
+      src: /mqttbenchclient/results/
+      dest: ./results/
+  tags: collect
+
+- name: Collect logs from brokers
+  hosts: broker_nodes
+  remote_user: ec2-user
+  become: yes
+  gather_facts: no
+  tasks:
+  - name: Get moquette logs 
+    synchronize:
+      mode: pull
+      src: /moquette/logs/
+      dest: ./logs/
+  tags: collect
+
+- name: Clear clients
+  hosts: client_nodes
+  remote_user: ec2-user
+  become: yes
+  tasks:
+  - name: Delete results folder
+    file:
+      path: /mqttbenchclient/results
+      state: absent
+  - name: Delete logs folder
+    file:
+      path: /mqttbenchclient/logs
+      state: absent
+  tags: clear
+
+- name: Clear brokers
+  hosts: broker_nodes
+  remote_user: ec2-user
+  become: yes
+  tasks:
+  - name: Delete log file
+    shell: for file in /moquette/logs/*; do >$file;done || true
+  tags: clear

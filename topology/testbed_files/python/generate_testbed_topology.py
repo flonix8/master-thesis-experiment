@@ -13,7 +13,7 @@ g = nx.Graph()
 
 # Generate topology
 
-topologies.reference_topology(g)
+topologies.reference_topology_delaygrouping(g)
 
 # Process graph
 

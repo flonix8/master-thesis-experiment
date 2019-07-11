@@ -1,0 +1,8 @@
+log_dest file /mosquitto/log/mosquitto_{{ hostvars[inventory_hostname].testbed_config.name }}_{{ hostvars[inventory_hostname].testbed_config.internal_ip }}.log
+connection_messages true
+log_type notice
+log_type information
+log_type subscribe
+log_type unsubscribe
+log_type error
+log_type warning

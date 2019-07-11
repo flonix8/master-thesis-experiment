@@ -4,8 +4,8 @@ import sys
 import networkx as nx
 from networkx import Graph, NetworkXNoCycle, NetworkXNoPath
 
-# .1, .2, .3, .255 are reserved by AWS
-ip_address_pool = ['10.0.2.' + str(i) for i in range(4, 255)]
+# .1, .2, .3, .255 are reserved by AWS and we keep .4 through .10 as static options
+ip_address_pool = ['10.0.2.' + str(i) for i in range(11, 255)]
 
 
 def generate_random_ip():
