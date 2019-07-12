@@ -7,3 +7,4 @@ delaygrouping_peering_port 1884
 delaygrouping_threshold 10
 delaygrouping_client_id {{ hostvars[inventory_hostname].testbed_config.name }}_{{ hostvars[inventory_hostname].testbed_config.internal_ip }}
 delaygrouping_anchor_node_address 10.0.2.10:1883
+delaygrouping_leadership_capability_measure {{ hostvars[inventory_hostname].testbed_config.leader_capability }}

@@ -251,9 +251,9 @@ def reference_topology_delaygrouping(g: Graph):
                                                      payload_size=200,
                                                  ),
                                              ]))
-    g.add_node('edge1_broker1', **node_attrs(role='broker', flavor='t3.micro'))
-    g.add_node('edge1_broker2', **node_attrs(role='broker', flavor='t3.micro'))
-    g.add_node('edge1_broker3', **node_attrs(role='broker', flavor='t3.micro'))
+    g.add_node('edge1_broker1', **node_attrs(role='broker', flavor='t3.micro', leader_capability=100))
+    g.add_node('edge1_broker2', **node_attrs(role='broker', flavor='t3.micro', leader_capability=50))
+    g.add_node('edge1_broker3', **node_attrs(role='broker', flavor='t3.micro', leader_capability=50))
     # Edge zone #2
     g.add_node('edge2', **node_attrs(type='zone'))
     g.add_node('edge2_client1', **node_attrs(role='client',
