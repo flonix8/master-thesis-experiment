@@ -56,7 +56,7 @@ def pub_config(**kwargs):
     config = {
         'type': 'publisher',
         'start_offset': 0,
-        'runtime': 600,
+        'runtime': 300,
         'payload_size': 200,
         **kwargs,
     }
