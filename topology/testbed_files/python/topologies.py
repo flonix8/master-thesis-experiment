@@ -130,6 +130,10 @@ def reference_topology_bridge(g: Graph):
                                                      frequency=100,
                                                      payload_size=200,
                                                  ),
+                                                 sub_config(
+                                                     connect_to='edge2_broker1',
+                                                     topic='/push-infos/road-conditions'
+                                                 ),
                                              ]))
     g.add_node('edge2_broker1', **node_attrs(role='broker', flavor='t3.micro'))
 
@@ -276,6 +280,10 @@ def reference_topology_delaygrouping(g: Graph):
                                                      topic='/car-telemetry/realtime/5',
                                                      frequency=100,
                                                      payload_size=200,
+                                                 ),
+                                                 sub_config(
+                                                     connect_to='edge2_broker1',
+                                                     topic='/push-infos/road-conditions'
                                                  ),
                                              ]))
     g.add_node('edge2_broker1', **node_attrs(role='broker', flavor='t3.micro'))
