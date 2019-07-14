@@ -1,3 +1,3 @@
 # type ; serverURI ; clientId ; topic ; frequency ; startOffset ; runtime ; payloadSize
-publisher;tcp://127.0.0.5:1883;test_publisher_large;/test/large;20;0;60;500000
-publisher;tcp://127.0.0.5:1883;test_publisher_small;/test/small;100;0;60;200
+publisher;tcp://127.0.0.1:1883;test_publisher_large;/test/large;20;0;300;500000
+#publisher;tcp://127.0.0.5:1883;test_publisher_small;/test/small;100;0;60;200

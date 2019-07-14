@@ -1,5 +1,14 @@
 ---
 
+- name: Delete all folders
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /moquette/config
+    - /moquette/results
+    - /moquette/logs
+
 - name: Install Docker SDK
   pip:
     name: docker-py
@@ -12,6 +21,11 @@
 - name: Create config folder
   file:
     path: /moquette/config
+    state: directory
+
+- name: Create results folder
+  file:
+    path: /moquette/results
     state: directory
 
 - name: Write moquette config
@@ -41,6 +55,7 @@
     volumes:
       - /moquette/config:/moquette/config
       - /moquette/logs:/moquette/bin/logs
+      - /moquette/results:/moquette/bin/results
     ports:
       - "1883:1883"
       - "1884:1884"

@@ -5,10 +5,13 @@
 # - name: Install Mosquitto (package includes clients)
 #   command: yum -y install mosquitto
 
-- name: Remove folder
+- name: Delete all folders
   file:
-    path: /mqttbenchclient
+    path: "{{ item }}"
     state: absent
+  with_items:
+    - /mqttbenchclient/results
+    - /mqttbenchclient/logs
 
 - name: Install Docker SDK
   pip:

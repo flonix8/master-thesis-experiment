@@ -72,6 +72,11 @@
       mode: pull
       src: /moquette/logs/
       dest: ./logs/
+  - name: Get message logs
+    synchronize:
+      mode: pull
+      src: /moquette/results
+      dest: ./results/
   tags: collect
 
 - name: Clear clients

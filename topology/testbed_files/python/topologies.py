@@ -23,7 +23,7 @@ def reference_topology_bridge(g: Graph):
                                                       topic='/traffic-control/camera-feed/#',
                                                   ),
                                               ]))
-    g.add_node('cloud1_broker1', **node_attrs(role='broker'), flavor='t3.small')
+    g.add_node('cloud1_broker1', **node_attrs(role='broker', flavor='t3.small'))
     # Edge zone #1
     g.add_node('edge1', **node_attrs(type='zone'))
     g.add_node('edge1_client1', **node_attrs(role='client',
@@ -338,9 +338,9 @@ def reference_topology_single_broker(g: Graph):
                                                      payload_size=200,
                                                  ),
                                              ]))
-    g.add_node('edge1_broker1', **node_attrs(role='zone'))
-    g.add_node('edge1_broker2', **node_attrs(role='zone'))
-    g.add_node('edge1_broker3', **node_attrs(role='zone'))
+    g.add_node('edge1_broker1', **node_attrs(type='zone'))
+    g.add_node('edge1_broker2', **node_attrs(type='zone'))
+    g.add_node('edge1_broker3', **node_attrs(type='zone'))
 
     # Connect cloud
     g.add_edge('cloud1_broker1', 'cloud1', **edge_attrs(delay=2))
