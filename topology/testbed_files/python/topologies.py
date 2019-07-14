@@ -111,12 +111,6 @@ def reference_topology_bridge(g: Graph):
     g.add_node('edge2', **node_attrs(type='zone'))
     g.add_node('edge2_client1', **node_attrs(role='client',
                                              client_config=[
-                                                 pub_config(
-                                                     connect_to='edge2_broker1',
-                                                     topic='/traffic-control/camera-feed/2',
-                                                     frequency=20,
-                                                     payload_size=500000,
-                                                 ),
                                                  sub_config(
                                                      connect_to='edge2_broker1',
                                                      topic='/car-telemetry/realtime/5',
@@ -262,12 +256,6 @@ def reference_topology_delaygrouping(g: Graph):
     g.add_node('edge2', **node_attrs(type='zone'))
     g.add_node('edge2_client1', **node_attrs(role='client',
                                              client_config=[
-                                                 pub_config(
-                                                     connect_to='edge2_broker1',
-                                                     topic='/traffic-control/camera-feed/2',
-                                                     frequency=20,
-                                                     payload_size=500000,
-                                                 ),
                                                  sub_config(
                                                      connect_to='edge2_broker1',
                                                      topic='/car-telemetry/realtime/5',
@@ -278,6 +266,12 @@ def reference_topology_delaygrouping(g: Graph):
                                                  sub_config(
                                                      connect_to='edge2_broker1',
                                                      topic='/push-infos/road-conditions'
+                                                 ),
+                                                 pub_config(
+                                                     connect_to='cloud1_broker1',
+                                                     topic='/car-telemetry/realtime/5',
+                                                     frequency=100,
+                                                     payload_size=200,
                                                  ),
                                              ]))
     g.add_node('edge2_broker1', **node_attrs(role='broker', flavor='t3.small', leader_capability=100))
