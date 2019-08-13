@@ -41,7 +41,7 @@ Some Ansible scripts for testbed orchestration are based on the MockFog-IaC proj
   ansible-playbook -i inventory/ec2.py --key-file=path/to/ssh/keyfile.pem --ssh-common-args="-o StrictHostKeyChecking=no" infrastructure_config.yml 
   ```
 ## Run experiment
-You can now run an experiment of your choice. Both provided experiment files `experiment_*.yml` build on the same set of tags to provide access to orchestration commands (and must be executed in the following order, unless you know what you are doing): `setup`, `prepare`, `run`, `shutdown`, `collect` \
+You can now run an experiment of your choice. Both provided experiment files `experiment_*.yml` build on the same set of tags to provide access to orchestration commands (and must be executed in the following order, unless you know what you are doing): `setup`, `prepare`, `run`, `shutdown`, `collect` /
 
 * Run experiment:
   ```bash
