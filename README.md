@@ -47,6 +47,11 @@ You can now run an experiment of your choice. Both provided experiment files `ex
   ```bash
   ansible-playbook -i inventory/ec2.py --key-file=path/to/ssh/keyfile.pem --ssh-common-args="-o StrictHostKeyChecking=no" experiment_xy.yml --tags experiment_step_tag
   ```
+  
+## Collect results (message logs with timings and broker logs)
+```bash
+  ansible-playbook -i inventory/ec2.py --key-file=path/to/ssh/keyfile.pem --ssh-common-args="-o StrictHostKeyChecking=no" experiment_xy.yml --tags collect
+  ```
 
 ## Tear down testbed
   ```bash
