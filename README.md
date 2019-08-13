@@ -3,7 +3,7 @@ This is the companion repository to my master's thesis. It contains some orchest
 Its goal is to set up a cloud testbed on AWS EC2 with delay-wise topology simulation and then deploy a network of MQTT brokers onto some of the nodes. The rest of the nodes are provisioned with MQTT benchmark clients simulating publishing and subscribing clients, publishing a configurable workload. \
 
 # Acknowledgement
-The main work (not part of this repository, but needed for correct operation) is based on the MQTT Broker "moquette", which is a Java implementation of a MQTTv3.1.1-compatible broker: https://github.com/moquette-io/moquette \
+This repository is only fully functional with the custom moquette broker in its subfolder. My implementation is based on the MQTT Broker "moquette", which is a Java implementation of a MQTTv3.1.1-compatible broker: https://github.com/moquette-io/moquette \
 Some Ansible scripts for testbed orchestration are based on the MockFog-IaC project: https://github.com/OpenFogStack/MockFog-IaC
 
 # Quickstart
