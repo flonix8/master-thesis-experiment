@@ -10,7 +10,7 @@ cycler==0.10.0
 decorator==4.4.0
 docutils==0.14
 html5lib==1.0.1
-Jinja2==2.10.1
+Jinja2==2.11.3
 jmespath==0.9.4
 kiwisolver==1.1.0
 MarkupSafe==1.1.1
