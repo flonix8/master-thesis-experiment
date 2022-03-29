@@ -18,7 +18,7 @@ matplotlib==3.1.0
 mechanize==0.4.2
 networkx==2.3
 numpy==1.16.4
-paramiko==2.4.2
+paramiko==2.10.1
 pyasn1==0.4.5
 pycparser==2.19
 Pygments==2.3.1
